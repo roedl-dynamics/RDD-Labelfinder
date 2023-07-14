@@ -16,7 +16,7 @@ the script enables a faster search of labels from specified label files.
 
 
 
-the label prefix is not yet automatically written in front of the copied value
+the label prefix is not yet automatically written in front of the copied value(currently in process)
 
 
 <h2>Edit the script</h2> 
