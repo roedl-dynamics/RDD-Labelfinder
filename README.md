@@ -1,5 +1,6 @@
 # Roedl-Dynamics-Label-Suche
 the script enables a faster search of labels from specified label files.
+![image](https://github.com/roedl-dynamics/D365FOServiceManager/blob/main/LabelFinderBild.PNG)
 
 <h2> How to Use </h2> 
 <ul>
