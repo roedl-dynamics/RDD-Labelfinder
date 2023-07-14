@@ -2,11 +2,12 @@
 the script enables a faster search of labels from specified label files.
 
 <h2> How to Use </h2> 
-1.place an INI file named "AutoLabelSearch.au3.ini" in the same folder as the script 
-2. name the first section "System" add "MaxSearchResults" as key  
-3. now you can add the label file to be searched individually as a section with the keys "Labelfile" and "Labelprefix".
-4. When you start the Script it will start in the Background, you can open the GUI in the Tray. 
-
+<ul>
+  <li>1.place an INI file named "AutoLabelSearch.au3.ini" in the same folder as the script </li>
+  <li>2. name the first section "System" add "MaxSearchResults" as key </li>
+  <li>3. now you can add the label file to be searched individually as a section with the keys "Labelfile" and "Labelprefix".</li>
+  <li>4. When you start the Script it will start in the Background, you can open the GUI in the Tray. </li>
+</ul>
 
 
 
