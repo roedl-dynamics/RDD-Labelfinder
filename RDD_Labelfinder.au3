@@ -179,7 +179,19 @@ Func TakeOver()
 
 				Local $tempVar = StringSplit($x[$i],"=")
 
-				;_ArrayDisplay($tempVar)
+				_ArrayAdd($LabelPrefix,$tempVar[0])
+
+				Local $found  = _ArrayBinarySearch($tempVar,$SelectedValue)
+
+				Local $isfound
+
+				if $found <> -1 Then
+
+					$isfound = True
+
+				else
+					$isfound = false
+				EndIf
 
 			next
 		else
@@ -207,12 +219,6 @@ Func TakeOver2()
 		Local $temp = $SectionNames[$i]
 
 		Local $getPraefix = IniRead($INIFile,$temp,"Labelprefix","wurde nicht gefunden")
-
-		;ConsoleWrite("INI-Datei: "& $INIFile&@CRLF)
-		;ConsoleWrite("temp: "& $temp&@CRLF)
-		;ConsoleWrite("Schlüssel: "& $key&@CRLF)
-		;ConsoleWrite("Labelprefix: " & $getPraefix& @CRLF)
-		;ConsoleWrite("----------------------------- " & @CRLF)
 
 		; fügt dem Array das Label dateien mit Prefix enthält werte hinzu
 		if $getPraefix <> "" and $getPraefix <> "wurde nicht gefunden" Then
