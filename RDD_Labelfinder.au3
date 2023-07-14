@@ -156,6 +156,14 @@ func search()
 EndFunc
 
 Func TakeOver()
+	$selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
+
+	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
+
+	_ClipBoard_SetData("" & $SelectedValue)
+EndFunc
+
+Func TakeOver2()
 
 	$selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
@@ -203,7 +211,7 @@ Func TakeOver()
 	ConsoleWrite("Funktion ist durchgelaufen ")
 EndFunc
 
-Func TakeOver2()
+Func TakeOver3()
 
 	$selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
