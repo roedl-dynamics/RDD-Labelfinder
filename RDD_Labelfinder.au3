@@ -226,15 +226,13 @@ Func TakeOver()
 			;MsgBox(0,"","Labelprefix: "& $prefix)
 
 
-			;Das funktioniert
+			ExitLoop
+		Endif
 			Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
 			Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schsreibt den ausgewählten Wert in die ListView
 
 			_ClipBoard_SetData("" &$prefix &": "& $SelectedValue)
-			ExitLoop
-		Endif
-
 	Next
 
 EndFunc
