@@ -100,6 +100,7 @@ Func openGUI()
 			Case $GUI_EVENT_CLOSE
 				Exit
 			Case $SearchButton
+				GUICtrlSetData($hListView, "")
 				search()
 			Case $TakeOverButton
 				TakeOver()
@@ -109,6 +110,8 @@ EndFunc
 
 
 func search()
+		_GUICtrlListView_DeleteAllItems($hListView)
+		Local $counter = 0
 		Local $eingabe = GUICtrlRead($InputField) ;liest das EingabeFeld aus
 		For $i = 0 to UBound($AllLabels)-1
 			If StringRegExp($AllLabels[$i],";") Then
@@ -122,6 +125,8 @@ func search()
 							_ArrayAdd($SearchResultsLabels,$tempArray[1]) ; Fügt dem Array mit dem den Gefundenen Labels das Label hinzu
 
 							_ArrayAdd($SearchResultsText,$tempArray[UBound($tempArray)-1]) ;Fügt dem Array mit den Gefundenen Text ein Text hinzu
+
+							$counter = $counter+1
 
 					EndIf
 			EndIf
@@ -146,6 +151,12 @@ func search()
 				Next
 			EndIf
 		EndIf
+		if $counter == 0 Then
+
+			GUICtrlCreateListViewItem("kein Treffer gefunden" & "|"&""& "|", $hListView)
+
+		EndIf
+		;MsgBox(0,"","Suche ist durchgelaufen ")
 EndFunc
 
 ; Takeover mit Labelprefix
@@ -158,8 +169,7 @@ Func TakeOver()
 
 	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 	Local $pathWithPrefix[0]
-	;Global $key = "Labelprefix"
-	Global $prefix
+	Global $prefix = ""
 
 	; Prüfen welche LabelDateien einen Präfix davor haben
 	For $i = 0 to UBound($SectionNames)-1
@@ -225,15 +235,15 @@ Func TakeOver()
 			ConsoleWrite("Labelprefix: "&$prefix)
 			;MsgBox(0,"","Labelprefix: "& $prefix)
 
-
 			ExitLoop
 		Endif
+	Next
+
 			Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
 			Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schsreibt den ausgewählten Wert in die ListView
 
-			_ClipBoard_SetData("" &$prefix &": "& $SelectedValue)
-	Next
+			_ClipBoard_SetData("" &$prefix &":"& $SelectedValue)
 
 EndFunc
 
