@@ -1,4 +1,4 @@
-# Roedl-Dynamics-Label-Suche
+# RDD-Labelfinder
 the script enables a faster search of labels from specified label files.<br>
 
 ![image](https://github.com/roedl-dynamics/R-dl-Dynamics---Label-Suche/blob/main/LabelfinderBild2.PNG)
