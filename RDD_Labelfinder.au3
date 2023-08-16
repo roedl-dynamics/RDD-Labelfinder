@@ -1,5 +1,6 @@
 ; Search Icon Source: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html
 ;#NoTrayIcon
+Opt ("MustDeclareVars",1)
 #include <StringConstants.au3>
 #include <ButtonConstants.au3>
 #include <EditConstants.au3>
@@ -60,8 +61,7 @@ Func Main()
     Local $iSearch = TrayCreateItem("Label suchen")
     Local $iExit = TrayCreateItem("Beenden")
 
-
-    TrayCreateItem("") ; Create a separator line.
+	TrayCreateItem("") ; Create a separator line.
 
     ; Show the tray menu
     TraySetState($TRAY_ICONSTATE_SHOW)
@@ -95,7 +95,7 @@ Func openGUI()
 	#EndRegion ### END Koda GUI section ###
 
 	While 1
-		$nMsg = GUIGetMsg()
+		Local $nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE
 				Exit
@@ -162,7 +162,7 @@ EndFunc
 ; Takeover mit Labelprefix
 Func TakeOver()
 
-	$selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
+	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
 	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
 	;MsgBox(0,"SelectedValue",$SelectedValue)
@@ -200,7 +200,7 @@ Func TakeOver()
 
 		;den Namen von dem Text trennen
 		For $i = 0 to UBound($temp2)-1
-			$tempValue  = StringSplit($temp2[$i],"=")
+			Local $tempValue  = StringSplit($temp2[$i],"=")
 			_ArrayAdd($Labels,$tempValue)
 		Next
 
@@ -211,13 +211,12 @@ Func TakeOver()
 			$isFound = True
 			;MsgBox(0,"","die Datei konnte gefunden werden")
 		else
-			; bleibt so wie es ist
+
 		EndIf
 
 		; wenn es gefunden wurde soll es an der Stelle
 
 		if $isFound == true then
-			; hier muss das Labelprefix bestimmt werden
 
 			;MsgBox(0,"","Prefixlabels: "&$PrefixLabels[$n])
 
@@ -227,7 +226,7 @@ Func TakeOver()
 				Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
 				if $comparativeValue == $PrefixLabels[$n] Then
 
-						$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")
+						$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
 						;MsgBox(0," gefundenener Prefix: ",$prefix)
 
 				EndIf
@@ -243,7 +242,7 @@ Func TakeOver()
 
 			Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schsreibt den ausgewählten Wert in die ListView
 
-			_ClipBoard_SetData("" &$prefix &":"& $SelectedValue)
+			_ClipBoard_SetData("" &$prefix & $SelectedValue)
 
 EndFunc
 
