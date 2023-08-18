@@ -91,11 +91,11 @@ Func openGUI()
 	Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 32, 400, 337, 27)
 	GUISetState(@SW_SHOW)
 	ControlFocus($Form1, "", $InputField)
-	GUICtrlSetResizing($TakeOverButton,$GUI_DOCKAUTO)
-	GUICtrlSetResizing($Group1,$GUI_DOCKAUTO)
-	GUICtrlSetResizing($SearchButton,$GUI_DOCKAUTO)
-	GUICtrlSetResizing($InputField,$GUI_DOCKAUTO)
+	;GUICtrlSetResizing($Group1,$GUI_DOCKAUTO)
+	;GUICtrlSetResizing($SearchButton,$GUI_DOCKAUTO)
+	;GUICtrlSetResizing($InputField,$GUI_DOCKAUTO)
 	GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO)
+	GUICtrlSetResizing($TakeOverButton,$GUI_DOCKAUTO)
 	#EndRegion ### END Koda GUI section ###
 
 	While 1
