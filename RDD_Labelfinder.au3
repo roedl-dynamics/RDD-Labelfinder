@@ -1,6 +1,8 @@
 ; Search Icon Source: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html
 ;#NoTrayIcon
+;Test2
 Opt ("MustDeclareVars",1)
+#include <AutoItConstants.au3>
 #include <StringConstants.au3>
 #include <ButtonConstants.au3>
 #include <EditConstants.au3>
@@ -23,6 +25,8 @@ Global $SearchResultsLabels[0]
 Global $SearchResultsText[0]
 Global $LabelPrefix[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
+Global $iSearch = TrayCreateItem("Label suchen")
+Global $iExit = TrayCreateItem("Beenden")
 
 Func Main()
 	;einlesen der Konfigurationsdatei
@@ -54,14 +58,14 @@ Func Main()
 					EndIf
 				EndIf
 	next
-
+	;_ArrayDisplay($AllLabels)
 	;MsgBox(0,"","Alle Labels wurden eingelesen")
 
     ; Create a tray menu with three items
-    Local $iSearch = TrayCreateItem("Label suchen")
-    Local $iExit = TrayCreateItem("Beenden")
+    ;Local $iSearch = TrayCreateItem("Label suchen")
+    ;Local $iExit = TrayCreateItem("Beenden")
 
-	TrayCreateItem("") ; Create a separator line.
+	;TrayCreateItem("") ; Create a separator line.
 
     ; Show the tray menu
     TraySetState($TRAY_ICONSTATE_SHOW)
@@ -98,21 +102,39 @@ Func openGUI()
 		Local $nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE
-				Exit
+				GUISetState(@SW_HIDE,$Form1)
+				Main()
+				;Exit
+				;WinClose($Form1)
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
 				search()
 			Case $TakeOverButton
 				TakeOver()
+				GUISetState(@SW_HIDE,$Form1)
+				Main()
 		EndSwitch
 	WEnd
 EndFunc
 
 
+
 func search()
-		_GUICtrlListView_DeleteAllItems($hListView)
-		Local $counter = 0
+		;_ArrayDisplay($SearchResultsLabels)
+		_GUICtrlListView_DeleteAllItems($hListView) ; löscht alle Einträge in der ListView
+
+		;ConsoleWrite("Der Größe Index des Arrays ist: " & UBound($SearchResultsLabels)-1&@CRLF)
+		Local $counter = 0 ; zählt die gefundenen Treffer
 		Local $eingabe = GUICtrlRead($InputField) ;liest das EingabeFeld aus
+
+		For $i = Ubound($SearchResultsLabels)-1 to 0 step -1
+
+			_ArrayDelete($SearchResultsLabels,$i)
+			_ArrayDelete($SearchResultsText,$i)
+
+		Next
+		;_ArrayDisplay($SearchResultsLabels,"SearchLabels")
+
 		For $i = 0 to UBound($AllLabels)-1
 			If StringRegExp($AllLabels[$i],";") Then
 				; passiert nichts
@@ -131,10 +153,12 @@ func search()
 					EndIf
 			EndIf
 		Next
+		;_ArrayDisplay($SearchResultsLabels)
 
-		;Schreibt die Ergebnisse in die Liste
+		; ab hier werden die Arrays nicht mehr bearbeitet sondern nur ausgegeben
+
+		;Schreibt die Ergebnisse in die Liste(aktuell noch alle da das Array vorher nicht geleert wurde)
 		If UBound($SearchResultsLabels) >  $MaxSearchResults Then
-
 
 			Local $returnValue = MsgBox($MB_YESNO,"Mehr als "&$MaxSearchResults,"möchten sie mehr anzeigen ?",15)
 			if $returnValue == $IDYES  or $returnValue == -1 Then
@@ -159,7 +183,6 @@ func search()
 		;MsgBox(0,"","Suche ist durchgelaufen ")
 EndFunc
 
-; Takeover mit Labelprefix
 Func TakeOver()
 
 	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
