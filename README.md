@@ -28,3 +28,6 @@ Both are free to download from the following links:
 
 Once installed, open the D365FOServiceManager.au3 file with SciTE to open and edit the code. By clicking <kbd>F5</kbd>, you can testrun the script.
 For further informations have a look at the official AutoIt [website](https://www.autoitscript.com/site/autoit-script-editor/installation/).
+<h1> item Source:  </h1>
+
+Search-icon: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html
