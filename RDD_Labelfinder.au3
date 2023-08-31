@@ -18,56 +18,73 @@ Opt ("MustDeclareVars",1)
 
 ;Opt("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
-Local $INIFile = @ScriptName & ".ini"
+Global $INIFile = "AutoLabelSearch.au3.ini"
 Global $MaxSearchResults = 0
-Global $AllLabels
+Global $AllLabels[0]
 Global $SearchResultsLabels[0]
 Global $SearchResultsText[0]
-Global $LabelPrefix[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
+Global $prefix = ""
+;Global $Daten[0][3] ; speichert das Label, Text,Kommentar und den Prefix
 
-Func Main()
-	;einlesen der Konfigurationsdatei
-	$INIFile = "AutoLabelSearch.au3.ini"
+ReadIN()
+;Main()
 
-	Global $MaxSearchResults
-	Global $AllLabels[0]
+Func ReadIN()
 	Global  $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
-	ConsoleWrite(@ScriptDir & "\" & $INIFile&@CRLF)
 
-	For $i = 1 to UBound($SectionNames)-1
-			Local $SectionName = $SectionNames[$i]
-
+			For $i = 1 to UBound($SectionNames)-1
+			Global $SectionName = $SectionNames[$i]
+				ConsoleWrite("Sectionname: "&$SectionName&@CRLF)
 				if $SectionName == "System" Then
 					$MaxSearchResults = IniRead($INIFile,$SectionName,"MaxSearchResults",0)
-					ConsoleWrite("$MaxSearchResults=" & $MaxSearchResults & @CRLF)
+					;ConsoleWrite("$MaxSearchResults=" & $MaxSearchResults & @CRLF)
 
 				ElseIf $SectionName == "General " Then
 					; hier soll nichts passieren
 				Else
-					;hier die prefixe auslesen und das Array befüllen
-					Local $tmpLabelFile = IniRead($INIFile,$SectionName,"Labelfile","")
-					if FileExists($tmpLabelFile) then
-						Local $CurrentLabelFile = FileReadToArray($tmpLabelFile)
+					; hier wird das Array befüllt
+					Global $tmpLabelFile = IniRead($INIFile,$SectionName,"Labelfile","") ; enthält die Pfade zu den Dateien aus der INI
+					Global $LabelPrefix = IniRead($INIFile,$SectionName,"Labelprefix","nichts gefunden") ; enthält dem Prefix der aktuellen SectionName
+
+
+					if FileExists($tmpLabelFile) then ; wenn das File existiert
+						Global $CurrentLabelFile = FileReadToArray($tmpLabelFile)
+
+						; hier das Array Trennen wie der TakeOver Function
+						for $n = 0 to Ubound($CurrentLabelFile)-1
+							Global $tempValue = StringSplit($CurrentLabelFile[$n],"=")
+							;_ArrayDisplay($tempValue)
+							;Local $label = $tempValue[1]
+							;Local $text = $tempValue[2]
+							;Local $sFill =  $LabelPrefix &"|"& $label &"|"&""
+							;_ArrayAdd($Daten,$sFill)
+						next
+						;_ArrayDisplay($Daten)
+
 						; zu dem anderen Array hinzugfügen
 						_ArrayAdd($AllLabels,$CurrentLabelFile)
+
+						; Label, Text und Prefix zu dem 2D Array hinzufügen
+
 					else
 						MsgBox(1,@ScriptName,"FileNotFound")
 					EndIf
 				EndIf
-	next
-	;_ArrayDisplay($AllLabels)
+			next
+			Main()
+EndFunc
+
+Func Main()
+	;einlesen der Konfigurationsdatei
+	$INIFile = "AutoLabelSearch.au3.ini"
+;	Global  $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
+	;ConsoleWrite("Arraygroeße: "&UBound($SectionNames)&@CRLF)
+
+
 	;MsgBox(0,"","Alle Labels wurden eingelesen")
-
-    ; Create a tray menu with three items
-    ;Local $iSearch = TrayCreateItem("Label suchen")
-    ;Local $iExit = TrayCreateItem("Beenden")
-
-	;TrayCreateItem("") ; Create a separator line.
-
-    ; Show the tray menu
     TraySetState($TRAY_ICONSTATE_SHOW)
 
     While 1
@@ -82,21 +99,32 @@ EndFunc
 
 Func openGUI()
 	#Region ### START Koda GUI section ### Form=
-	Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",396, 460, 190, 151,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
-	Global $Group1 = GUICtrlCreateGroup("Suche", 32, 24, 337, 65)
-	Global $SearchButton = GUICtrlCreateButton("", 300, 45, 60, 27,$BS_ICON)
-	GUICtrlSetImage(-1, $Imagepath, 169, 0)
-	Global $InputField = GUICtrlCreateInput("", 40, 45, 200, 20)
-	Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 32, 113, 337, 280)
-	Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 32, 400, 337, 27)
-	GUISetState(@SW_SHOW)
-	ControlFocus($Form1, "", $InputField)
-	;GUICtrlSetResizing($Group1,$GUI_DOCKAUTO)
-	;GUICtrlSetResizing($SearchButton,$GUI_DOCKAUTO)
-	;GUICtrlSetResizing($InputField,$GUI_DOCKAUTO)
-	GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO)
-	GUICtrlSetResizing($TakeOverButton,$GUI_DOCKAUTO)
-	#EndRegion ### END Koda GUI section ###
+		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",396, 460, 190, 151,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
+		GUICtrlSetResizing($Form1,$GUI_DOCKAUTO)
+
+		Global $Group1 = GUICtrlCreateGroup("Suche", 32, 24, 337, 65)
+		GUICtrlSetResizing($Group1, $GUI_DOCKHEIGHT + $GUI_DOCKRIGHT + $GUI_DOCKLEFT+$GUI_DOCKSTATEBAR)
+		;GUICtrlSetResizing($Group1,$GUI_DOCKAUTO)
+
+		Global $SearchButton = GUICtrlCreateButton("", 300, 45, 60, 20,$BS_ICON)
+		;GUICtrlSetResizing($SearchButton,$GUI_DOCKSIZE+$GUI_DOCKAUTO)
+		;GUICtrlSetResizing($SearchButton,$GUI_DOCKAUTO)
+		GUICtrlSetResizing($SearchButton,$GUI_DOCKTOP)
+		GUICtrlSetImage(-1, $Imagepath, 169, 0)
+
+		Global $InputField = GUICtrlCreateInput("", 40, 45, 250, 20)
+		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKRIGHT+$GUI_DOCKTOP)
+
+		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 32, 113, 337, 280)
+		GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO)
+
+		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 32, 400, 337, 27)
+		GUICtrlSetResizing($TakeOverButton,$GUI_DOCKAUTO)
+
+		GUISetState(@SW_SHOW)
+
+		ControlFocus($Form1, "", $InputField)
+	#EndRegion ### END Koda GUI section ##
 
 	While 1
 		Local $nMsg = GUIGetMsg()
@@ -104,7 +132,6 @@ Func openGUI()
 			Case $GUI_EVENT_CLOSE
 				GUISetState(@SW_HIDE,$Form1)
 				Main()
-				;Exit
 				;WinClose($Form1)
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
@@ -113,6 +140,8 @@ Func openGUI()
 				TakeOver()
 				GUISetState(@SW_HIDE,$Form1)
 				Main()
+			Case $GUI_EVENT_RESIZED
+				;MsgBox(0,"","Größe des Fensters wurde verändert ")
 		EndSwitch
 	WEnd
 EndFunc
@@ -126,13 +155,16 @@ func search()
 		;ConsoleWrite("Der Größe Index des Arrays ist: " & UBound($SearchResultsLabels)-1&@CRLF)
 		Local $counter = 0 ; zählt die gefundenen Treffer
 		Local $eingabe = GUICtrlRead($InputField) ;liest das EingabeFeld aus
+		ConsoleWrite("gesuchter Wert: " & $eingabe)
 
+		; leert die Resultate der alten Suche
 		For $i = Ubound($SearchResultsLabels)-1 to 0 step -1
 
 			_ArrayDelete($SearchResultsLabels,$i)
 			_ArrayDelete($SearchResultsText,$i)
 
 		Next
+
 		;_ArrayDisplay($SearchResultsLabels,"SearchLabels")
 
 		For $i = 0 to UBound($AllLabels)-1
@@ -155,9 +187,6 @@ func search()
 		Next
 		;_ArrayDisplay($SearchResultsLabels)
 
-		; ab hier werden die Arrays nicht mehr bearbeitet sondern nur ausgegeben
-
-		;Schreibt die Ergebnisse in die Liste(aktuell noch alle da das Array vorher nicht geleert wurde)
 		If UBound($SearchResultsLabels) >  $MaxSearchResults Then
 
 			Local $returnValue = MsgBox($MB_YESNO,"Mehr als "&$MaxSearchResults,"möchten sie mehr anzeigen ?",15)
@@ -187,12 +216,10 @@ Func TakeOver()
 
 	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
-	;MsgBox(0,"SelectedValue",$SelectedValue)
+	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index passt.
+	;ConsoleWrite("ausgewählter Wert: "&$selectedValue)
 
 	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
-	Local $pathWithPrefix[0]
-	Global $prefix = ""
 
 	; Prüfen welche LabelDateien einen Präfix davor haben
 	For $i = 0 to UBound($SectionNames)-1
@@ -209,10 +236,8 @@ Func TakeOver()
 		EndIf
 	Next
 
-	;_ArrayDisplay($PrefixLabels,"Dateien die ein Labelprefix haben") ; zeigt das Array an Dateien mit Prefixen enthält
-
+	;_ArrayDisplay($PrefixLabels)
 	Local $isFound = false
-	;MsgBox(0,"Größe von PrefixLabels",UBound($PrefixLabels))
 
 	For $n = 0 to UBound($PrefixLabels)-1
 
@@ -229,6 +254,7 @@ Func TakeOver()
 
 		;_ArrayDisplay($Labels,"zu durchsuchendes Array")
 		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; enthält den Rückgabewert der Suche
+
 		; MsgBox(0,"Rückgabewert",$returnValueSearch)
 		if $returnValueSearch  <> -1 Then
 			$isFound = True
@@ -254,19 +280,21 @@ Func TakeOver()
 
 				EndIf
 			Next
-			ConsoleWrite("Labelprefix: "&$prefix)
+
+			;ConsoleWrite("Labelprefix: "&$prefix)
 			;MsgBox(0,"","Labelprefix: "& $prefix)
 
 			ExitLoop
 		Endif
 	Next
-
+			;Übernimmt das ausgewählte Label
 			Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-			Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schsreibt den ausgewählten Wert in die ListView
+			Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
 
 			_ClipBoard_SetData("" &$prefix & $SelectedValue)
 
+			$prefix = ""
+
 EndFunc
 
-Main()
