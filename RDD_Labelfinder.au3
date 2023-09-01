@@ -99,27 +99,31 @@ EndFunc
 
 Func openGUI()
 	#Region ### START Koda GUI section ### Form=
-		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",396, 460, 190, 151,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
+		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",350, 460, 190, 151,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
 		GUICtrlSetResizing($Form1,$GUI_DOCKAUTO)
 
-		Global $Group1 = GUICtrlCreateGroup("Suche", 32, 24, 337, 65)
-		GUICtrlSetResizing($Group1, $GUI_DOCKHEIGHT + $GUI_DOCKRIGHT + $GUI_DOCKLEFT+$GUI_DOCKSTATEBAR)
+		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 24, 318, 65)
+		;GUICtrlSetResizing($Group1, $GUI_DOCKHEIGHT + $GUI_DOCKRIGHT + $GUI_DOCKLEFT+$GUI_DOCKSTATEBAR)
+		;GUICtrlSetResizing($Group1,$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKRIGHT)
+		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 		;GUICtrlSetResizing($Group1,$GUI_DOCKAUTO)
 
-		Global $SearchButton = GUICtrlCreateButton("", 300, 45, 60, 20,$BS_ICON)
-		;GUICtrlSetResizing($SearchButton,$GUI_DOCKSIZE+$GUI_DOCKAUTO)
-		;GUICtrlSetResizing($SearchButton,$GUI_DOCKAUTO)
-		GUICtrlSetResizing($SearchButton,$GUI_DOCKTOP)
-		GUICtrlSetImage(-1, $Imagepath, 169, 0)
+		Global $SearchButton = GUICtrlCreateButton("", 270, 45, 60, 20,$BS_ICON)
+		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+		GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
 
-		Global $InputField = GUICtrlCreateInput("", 40, 45, 250, 20)
-		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKRIGHT+$GUI_DOCKTOP)
+		Global $InputField = GUICtrlCreateInput("", 26, 45, 230, 20)
+		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 32, 113, 337, 280)
-		GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO)
+		;Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 113, 318, 280)
+		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 100, 318, 280)
+		;Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 90, 318, 303)
+		GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKBOTTOM)
 
-		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 32, 400, 337, 27)
-		GUICtrlSetResizing($TakeOverButton,$GUI_DOCKAUTO)
+		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 16, 400, 318, 27)
+		;GUICtrlSetResizing($TakeOverButton,$GUI_DOCKAUTO)
+		;GUICtrlSetResizing(-1 ,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKBOTTOM)
+		GUICtrlSetResizing(-1 ,$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKBOTTOM+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT)
 
 		GUISetState(@SW_SHOW)
 
@@ -155,6 +159,9 @@ func search()
 		;ConsoleWrite("Der Größe Index des Arrays ist: " & UBound($SearchResultsLabels)-1&@CRLF)
 		Local $counter = 0 ; zählt die gefundenen Treffer
 		Local $eingabe = GUICtrlRead($InputField) ;liest das EingabeFeld aus
+		if $eingabe == "" then
+			MsgBox(48,"Achtung","leeres Suchfeld")
+		EndIf
 		ConsoleWrite("gesuchter Wert: " & $eingabe)
 
 		; leert die Resultate der alten Suche
