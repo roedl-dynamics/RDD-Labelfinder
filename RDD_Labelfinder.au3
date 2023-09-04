@@ -29,6 +29,7 @@ Global $iExit = TrayCreateItem("Beenden")
 Global $prefix = ""
 ;Global $Daten[0][3] ; speichert das Label, Text,Kommentar und den Prefix
 
+
 ReadIN()
 ;Main()
 
@@ -103,7 +104,6 @@ Func openGUI()
 		Local $minHeigt = 460
 		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",350, 460, 190, 151,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
 		GUICtrlSetResizing($Form1,$GUI_DOCKAUTO)
-
 		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 24, 318, 65)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
@@ -140,7 +140,12 @@ Func openGUI()
 				GUISetState(@SW_HIDE,$Form1)
 				Main()
 			Case $GUI_EVENT_RESIZED
-				;MsgBox(0,"","Größe des Fensters wurde verändert ")
+				Local $NewSize = WinGetPos($Form1)
+				if $NewSize[2] < $minWidth OR $NewSize[3] < $minHeigt Then
+
+					WinMove($Form1,"",$NewSize[0],$NewSize[1],$minWidth,$minHeigt)
+
+				EndIf
 		EndSwitch
 	WEnd
 EndFunc
