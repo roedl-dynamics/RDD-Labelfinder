@@ -99,14 +99,13 @@ EndFunc
 
 Func openGUI()
 	#Region ### START Koda GUI section ### Form=
+		Local $minWidth = 350
+		Local $minHeigt = 460
 		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",350, 460, 190, 151,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
 		GUICtrlSetResizing($Form1,$GUI_DOCKAUTO)
 
 		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 24, 318, 65)
-		;GUICtrlSetResizing($Group1, $GUI_DOCKHEIGHT + $GUI_DOCKRIGHT + $GUI_DOCKLEFT+$GUI_DOCKSTATEBAR)
-		;GUICtrlSetResizing($Group1,$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKRIGHT)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
-		;GUICtrlSetResizing($Group1,$GUI_DOCKAUTO)
 
 		Global $SearchButton = GUICtrlCreateButton("", 270, 45, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
@@ -115,14 +114,10 @@ Func openGUI()
 		Global $InputField = GUICtrlCreateInput("", 26, 45, 230, 20)
 		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		;Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 113, 318, 280)
-		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 100, 318, 280)
-		;Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 90, 318, 303)
+		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 100, 318, 295)
 		GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKBOTTOM)
 
 		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 16, 400, 318, 27)
-		;GUICtrlSetResizing($TakeOverButton,$GUI_DOCKAUTO)
-		;GUICtrlSetResizing(-1 ,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKBOTTOM)
 		GUICtrlSetResizing(-1 ,$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKBOTTOM+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT)
 
 		GUISetState(@SW_SHOW)
