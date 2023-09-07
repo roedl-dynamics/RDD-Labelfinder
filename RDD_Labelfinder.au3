@@ -131,7 +131,6 @@ Func openGUI()
 			Case $GUI_EVENT_CLOSE
 				GUISetState(@SW_HIDE,$Form1)
 				Main()
-				;WinClose($Form1)
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
 				search()
