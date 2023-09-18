@@ -202,7 +202,6 @@ Func openGUI()
 EndFunc
 
 
-
 func search()
 		;_ArrayDisplay($SearchResultsLabels)
 		_GUICtrlListView_DeleteAllItems($hListView) ; löscht alle Einträge in der ListView
@@ -308,7 +307,7 @@ Func TakeOver()
 		For $i = 0 to UBound($temp2)-1
 			Global $tempValue  = StringSplit($temp2[$i],"=")
 			;_ArrayDisplay($tempValue)
-			_ArrayAdd($Labels,$tempValue)
+			_ArrayAdd($Labels,$tempValue[1])
 			;_ArrayDisplay($Labels,"Labels")
 		Next
 
