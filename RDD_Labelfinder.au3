@@ -274,10 +274,10 @@ Func TakeOver()
 	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
 	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index gehört.
-	;ConsoleWrite("ausgewählter Wert: "&$selectedValue)
 
 	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
+	;ConsoleWrite("Start(Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
 	; Prüfen welche LabelDateien einen Präfix davor haben
 	For $i = 0 to UBound($SectionNames)-1
 
@@ -292,10 +292,12 @@ Func TakeOver()
 
 		EndIf
 	Next
+	;ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
 
 	Local $isFound = false
 
-	;
+	ConsoleWrite("Start (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
+	;Prüfen ob das Label einen Präfix haben muss
 	For $n = 0 to UBound($PrefixLabels)-1
 
 		Local $temp2 = FileReadToArray($PrefixLabels[$n]) ; zwischenspeicher der
@@ -304,49 +306,56 @@ Func TakeOver()
 		;_ArrayDisplay($temp2,"temp2")
 
 		;den Namen von dem Text trennen
-		For $i = 0 to UBound($temp2)-1
-			Global $tempValue  = StringSplit($temp2[$i],"=")
+		For $m = 0 to UBound($temp2)-1
+			Global $tempValue  = StringSplit($temp2[$m],"=")
 			;_ArrayDisplay($tempValue)
 			_ArrayAdd($Labels,$tempValue[1])
 			;_ArrayDisplay($Labels,"Labels")
 		Next
 
-		;_ArrayDisplay($Labels,"zu durchsuchendes Array")
 		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
 
-		; MsgBox(0,"Rückgabewert",$returnValueSearch)
 		if $returnValueSearch  <> -1 Then
-			$isFound = True
+			;$isFound = True
 			;MsgBox(0,"","die Datei konnte gefunden werden")
-		EndIf
-
-		; wenn es gefunden wurde soll es an der Stelle
-
-		if $isFound == true then
-
-			;MsgBox(0,"","Prefixlabels: "&$PrefixLabels[$n])
-
-			;Durchgehen in welcher Section der Pfad zu finden ist
+						;Durchgehen in welcher Section der Pfad zu finden ist
+			;ConsoleWrite("Start Suche nach Section: " & @MIN &":"&@SEC&@CRLF )
 			For $i = 1 to UBound($SectionNames)-1
 
 				Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
 				if $comparativeValue == $PrefixLabels[$n] Then
 
 						$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
-						;MsgBox(0," gefundenener Prefix: ",$prefix)
 
 				EndIf
 			Next
-
-			;ConsoleWrite("Labelprefix: "&$prefix)
-
+			;ConsoleWrite("Ende Suche nach Section: " & @MIN &":"&@SEC&@CRLF )
 			ExitLoop
-		Endif
-	Next
-			; der Teil muss auch bei einem Umschreiben so bleiben
-			Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
+		EndIf
 
-			Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
+		;Prüft welches Präfix vor das Label muss
+		;if $isFound == true then
+
+			;Durchgehen in welcher Section der Pfad zu finden ist
+			;ConsoleWrite("Start Suche nach Section: " & @MIN &":"&@SEC&@CRLF )
+		;	For $i = 1 to UBound($SectionNames)-1
+
+		;		Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
+		;		if $comparativeValue == $PrefixLabels[$n] Then
+
+		;				$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
+
+		;		EndIf
+		;	Next
+			;ConsoleWrite("Ende Suche nach Section: " & @MIN &":"&@SEC&@CRLF )
+		;	ExitLoop
+		;Endif
+	Next
+	ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
+			; der Teil kann so bestehen bleiben
+			;Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
+
+			;Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
 
 			_ClipBoard_SetData("" &$prefix & $SelectedValue)
 
