@@ -79,56 +79,6 @@ Func ReadIN()
 			Main()
 EndFunc
 
-Func ReadIN2()
-	Local $label
-	Local $text
-	Local $kommentar
-	Global  $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
-	For $i = 1 to UBound($Sectionnames)-1
-		Global $prefix = ""
-		Local $SectionName = $SectionNames[$i]
-		if $SectionName == "System" Then
-					$MaxSearchResults = IniRead($INIFile,$SectionName,"MaxSearchResults",0)
-					;ConsoleWrite("$MaxSearchResults=" & $MaxSearchResults & @CRLF)
-		elseif $SectionName == "General" Then
-					; hier passiert nichts
-		else
-			Global $tmpLabelFile = IniRead($INIFile,$SectionName,"Labelfile","")
-			$prefix = IniRead($INIFile,$SectionName,"Labelprefix","")
-			if FileExists($tmpLabelFile) Then
-				; hier muss das Label, der Text, der Kommentar und der Prefix in das Array geschrieben werden
-				Local $FileArray = FileReadToArray($INIFile)
-				For $n = 0 to UBound($FileArray)-1
-					Local $tempArray = StringSplit($FileArray[$i], "[=]")
-
-					if $i < UBound($FileArray) - 1 Then
-						Local $ersterWert = StringLeft($FileArray[$i + 1], 1)
-
-						if $ersterWert = ";" Then
-							$label = $tempArray[1]
-							$text = $tempArray[2]
-							$kommentar = $FileArray[$i + 1]
-							$i += 1 ; Überspringe die nächste Zeile (Kommentar)
-						else
-							$label = $tempArray[1]
-							$text = $tempArray[2]
-							$kommentar = ""
-						EndIf
-					Else
-						$label = $tempArray[1]
-						$text = $tempArray[2]
-						$kommentar = ""
-					EndIf
-					next
-				EndIf
-		EndIf
-		Local $sFill = $label& "|" & $text &"|" & $kommentar
-		_ArrayAdd($Daten, $sFill)
-	next
-	_ArrayDisplay($Daten)
-	Main()
-EndFunc
-
 Func Main()
 	;einlesen der Konfigurationsdatei
 	$INIFile = "AutoLabelSearch.au3.ini"
@@ -292,12 +242,13 @@ Func TakeOver()
 
 		EndIf
 	Next
-	;ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
+		;ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
 
-	Local $isFound = false
+		Local $isFound = false
 
 	ConsoleWrite("Start (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
-	;Prüfen ob das Label einen Präfix haben muss
+
+	;Prüfen ob das Label einen Präfix haben muss (hier dauert es 3 Sekunden)
 	For $n = 0 to UBound($PrefixLabels)-1
 
 		Local $temp2 = FileReadToArray($PrefixLabels[$n]) ; zwischenspeicher der
@@ -316,10 +267,6 @@ Func TakeOver()
 		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
 
 		if $returnValueSearch  <> -1 Then
-			;$isFound = True
-			;MsgBox(0,"","die Datei konnte gefunden werden")
-						;Durchgehen in welcher Section der Pfad zu finden ist
-			;ConsoleWrite("Start Suche nach Section: " & @MIN &":"&@SEC&@CRLF )
 			For $i = 1 to UBound($SectionNames)-1
 
 				Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
@@ -333,25 +280,9 @@ Func TakeOver()
 			ExitLoop
 		EndIf
 
-		;Prüft welches Präfix vor das Label muss
-		;if $isFound == true then
-
-			;Durchgehen in welcher Section der Pfad zu finden ist
-			;ConsoleWrite("Start Suche nach Section: " & @MIN &":"&@SEC&@CRLF )
-		;	For $i = 1 to UBound($SectionNames)-1
-
-		;		Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
-		;		if $comparativeValue == $PrefixLabels[$n] Then
-
-		;				$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
-
-		;		EndIf
-		;	Next
-			;ConsoleWrite("Ende Suche nach Section: " & @MIN &":"&@SEC&@CRLF )
-		;	ExitLoop
-		;Endif
 	Next
 	ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
+	ConsoleWrite("------------------------------------------------------------------")
 			; der Teil kann so bestehen bleiben
 			;Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
