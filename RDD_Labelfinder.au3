@@ -28,6 +28,7 @@ Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
 Global $prefix = ""
 Global $Daten[0][4] ; speichert das Label, Text,Kommentar und den Prefix
+Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
 ReadIN()
 ;Main()
@@ -76,6 +77,7 @@ Func ReadIN()
 					EndIf
 				EndIf
 			next
+			; Speichern welche Dateien einen Prefix haben
 			Main()
 EndFunc
 
@@ -242,9 +244,7 @@ Func TakeOver()
 
 		EndIf
 	Next
-		;ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
-
-		Local $isFound = false
+	;ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
 
 	ConsoleWrite("Start (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
 
@@ -258,11 +258,11 @@ Func TakeOver()
 
 		;den Namen von dem Text trennen
 		For $m = 0 to UBound($temp2)-1
-			Global $tempValue  = StringSplit($temp2[$m],"=")
-			;_ArrayDisplay($tempValue)
+		Global $tempValue  = StringSplit($temp2[$m],"=")
+
 			_ArrayAdd($Labels,$tempValue[1])
-			;_ArrayDisplay($Labels,"Labels")
-		Next
+
+	Next
 
 		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
 
@@ -283,13 +283,13 @@ Func TakeOver()
 	Next
 	ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
 	ConsoleWrite("------------------------------------------------------------------")
-			; der Teil kann so bestehen bleiben
-			;Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-			;Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
+	;Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-			_ClipBoard_SetData("" &$prefix & $SelectedValue)
+	;Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
 
-			$prefix = ""
+	_ClipBoard_SetData("" &$prefix & $SelectedValue)
+
+	$prefix = ""
 
 EndFunc
