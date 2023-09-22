@@ -26,12 +26,11 @@ Global $SearchResultsText[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
-Global $prefix = ""
+;Global $prefix = ""
 Global $Daten[0][4] ; speichert das Label, Text,Kommentar und den Prefix
 Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
 ReadIN()
-;Main()
 
 Func ReadIN()
 	Global  $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
@@ -77,7 +76,22 @@ Func ReadIN()
 					EndIf
 				EndIf
 			next
-			; Speichern welche Dateien einen Prefix haben
+
+			; Speichern welche Dateien einen Prefix haben (um später den SelectedValue zu suchen)
+				For $i = 0 to UBound($SectionNames)-1
+
+					Local $temp = $SectionNames[$i]
+
+					Local $getPraefix = IniRead($INIFile,$temp,"Labelprefix","wurde nicht gefunden")
+
+					; fügt dem Array das Label dateien mit Prefix enthält werte hinzu
+					if $getPraefix <> "" and $getPraefix <> "wurde nicht gefunden" Then
+
+						_ArrayAdd($PrefixLabels,IniRead($INIFile,$temp,"Labelfile",0))
+
+					EndIf
+				Next
+				_ArrayDisplay($PrefixLabels)
 			Main()
 EndFunc
 
@@ -85,9 +99,7 @@ Func Main()
 	;einlesen der Konfigurationsdatei
 	$INIFile = "AutoLabelSearch.au3.ini"
 
-
-	;MsgBox(0,"","Alle Labels wurden eingelesen")
-    TraySetState($TRAY_ICONSTATE_SHOW)
+	TraySetState($TRAY_ICONSTATE_SHOW)
 
     While 1
         Switch TrayGetMsg()
@@ -155,18 +167,19 @@ EndFunc
 
 
 func search()
-		;_ArrayDisplay($SearchResultsLabels)
+
 		_GUICtrlListView_DeleteAllItems($hListView) ; löscht alle Einträge in der ListView
 
 		;ConsoleWrite("Der Größe Index des Arrays ist: " & UBound($SearchResultsLabels)-1&@CRLF)
 		Local $counter = 0 ; zählt die gefundenen Treffer
 		Local $eingabe = GUICtrlRead($InputField) ;liest das EingabeFeld aus
+
 		if $eingabe == "" then
 			MsgBox(48,"Achtung","leeres Suchfeld")
 		EndIf
 		ConsoleWrite("gesuchter Wert: " & $eingabe& @CRLF)
 
-		; leert die Resultate der alten Suche
+		; leert die Resultate der alten Suche (läuft Rückwärts da das Array immer kleiner wird)
 		For $i = Ubound($SearchResultsLabels)-1 to 0 step -1
 
 			_ArrayDelete($SearchResultsLabels,$i)
@@ -189,7 +202,6 @@ func search()
 
 							_ArrayAdd($SearchResultsText,$tempArray[UBound($tempArray)-1]) ;Fügt dem Array mit den Gefundenen Text ein Text hinzu
 
-
 							$counter = $counter+1
 
 					EndIf
@@ -211,14 +223,14 @@ func search()
 					GUICtrlCreateListViewItem($SearchResultsLabels[$i] & "|"&$SearchResultsText[$i]& "|", $hListView)
 
 				Next
-		EndIf
+			EndIf
 		EndIf
 		if $counter == 0 Then
 
 			GUICtrlCreateListViewItem("kein Treffer gefunden" & "|"&""& "|", $hListView)
 
 		EndIf
-		;MsgBox(0,"","Suche ist durchgelaufen ")
+		MsgBox(0,"","Suche ist durchgelaufen ")
 EndFunc
 
 Func TakeOver()
@@ -226,67 +238,45 @@ Func TakeOver()
 	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
 	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index gehört.
+	Local $prefix = ""
 
-	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
-
-	;ConsoleWrite("Start(Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
-	; Prüfen welche LabelDateien einen Präfix davor haben
-	For $i = 0 to UBound($SectionNames)-1
-
-		Local $temp = $SectionNames[$i]
-
-		Local $getPraefix = IniRead($INIFile,$temp,"Labelprefix","wurde nicht gefunden")
-
-		; fügt dem Array das Label dateien mit Prefix enthält werte hinzu
-		if $getPraefix <> "" and $getPraefix <> "wurde nicht gefunden" Then
-
-			_ArrayAdd($PrefixLabels,IniRead($INIFile,$temp,"Labelfile",0))
-
-		EndIf
-	Next
-	;ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
-
+	ConsoleWrite("------------------------------------------------------------------")
 	ConsoleWrite("Start (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
 
 	;Prüfen ob das Label einen Präfix haben muss (hier dauert es 3 Sekunden)
-	For $n = 0 to UBound($PrefixLabels)-1
+	For $i = 0 to UBound($PrefixLabels)-1
 
-		Local $temp2 = FileReadToArray($PrefixLabels[$n]) ; zwischenspeicher der
+		Local $temp2 = FileReadToArray($PrefixLabels[$i]) ; zwischenspeicher der
 		Local $Labels[0]
 
 		;_ArrayDisplay($temp2,"temp2")
 
 		;den Namen von dem Text trennen
-		For $m = 0 to UBound($temp2)-1
-		Global $tempValue  = StringSplit($temp2[$m],"=")
+		For $n = 0 to UBound($temp2)-1
+			Global $tempValue  = StringSplit($temp2[$n],"=")
 
 			_ArrayAdd($Labels,$tempValue[1])
 
-	Next
+		Next
 
-		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
+		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; Sucht den ausgewählten Wert in den Dateien die einen Prefix haben
 
 		if $returnValueSearch  <> -1 Then
 			For $i = 1 to UBound($SectionNames)-1
 
 				Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
-				if $comparativeValue == $PrefixLabels[$n] Then
+				if $comparativeValue == $PrefixLabels[$i] Then
 
 						$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
 
 				EndIf
 			Next
-			;ConsoleWrite("Ende Suche nach Section: " & @MIN &":"&@SEC&@CRLF )
 			ExitLoop
 		EndIf
 
 	Next
 	ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
 	ConsoleWrite("------------------------------------------------------------------")
-
-	;Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
-
-	;Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
 
 	_ClipBoard_SetData("" &$prefix & $SelectedValue)
 
