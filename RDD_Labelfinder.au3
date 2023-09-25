@@ -19,6 +19,7 @@ Opt ("MustDeclareVars",1)
 ;Opt("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
 Global $INIFile = "AutoLabelSearch.au3.ini"
+Global $INIFile = "AutoLabelSearch.au3.ini"
 Global $MaxSearchResults = 0
 Global $AllLabels[0]
 Global $SearchResultsLabels[0]
@@ -26,11 +27,56 @@ Global $SearchResultsText[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
-;Global $prefix = ""
-Global $Daten[0][4] ; speichert das Label, Text,Kommentar und den Prefix
+Global $prefix = ""
+Global $Daten[0][3] ; speichert das Label, Text,Kommentar und den Prefix
 Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
 ReadIN()
+
+Func ReadIN2()
+	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
+	;_ArrayDisplay($SectionNames)
+	For $i = 1 to UBound($SectionNames)-1
+		Global $SectionName = $SectionNames[$i]
+		if $SectionName == "System" Then
+			$MaxSearchResults = IniRead($INIFile,$SectionName,"MaxSearchResults",0)
+		elseif $SectionName == "General" Then
+			; passiert nichts
+		Else
+			Global $tmpLabelPath = IniRead($INIFile,$SectionName,"Labelfile","")
+			Global $DateiInArray = FileReadToArray($tmpLabelPath)
+			;_ArrayDisplay($DateiInArray,"Komplette Datei")
+			Global $LabelPrefix = IniRead($INIFile,$SectionName,"Labelprefix","")
+
+			Local $newArray[0]
+			For $n = 0 to UBound($DateiInArray)-1
+				Local $line = StringStripWS($DateiInArray[$n],3)
+				If StringLeft($line,1) <> ";" Then
+					ConsoleWrite("fügt "& $line &"hinzu"&@CRLF)
+					_ArrayAdd($newArray,$line)
+
+				EndIf
+			Next
+
+		;_ArrayDisplay($newArray)
+		ConsoleWrite("bis hier läuft es")
+			For $m = 0 to Ubound($newArray)-1
+				Local $tmpArray = StringSplit($newArray[$m],"=")
+				Global $label = $tmpArray[1]
+				Global $text = $tmpArray[2]
+				Global $prefix = $LabelPrefix & ":"
+				Global $sFill =  $label &"|"& $text &"|"& $prefix
+				_ArrayAdd($Daten,$sFill)
+			Next
+		EndIf
+	next
+	;_ArrayDisplay($Daten)
+	For $i = 0 to Ubound($Daten)-1
+		ConsoleWrite("Ausgabe: "& $Daten[$i][0]&" "& $Daten[$i][1]&" "& $Daten[$i][2])
+	next
+	ConsoleWrite("Methode ist durchgelaufen")
+	Main()
+EndFunc
 
 Func ReadIN()
 	Global  $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
@@ -230,56 +276,91 @@ func search()
 			GUICtrlCreateListViewItem("kein Treffer gefunden" & "|"&""& "|", $hListView)
 
 		EndIf
-		MsgBox(0,"","Suche ist durchgelaufen ")
+		;MsgBox(0,"","Suche ist durchgelaufen ")
 EndFunc
 
 Func TakeOver()
 
 	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index gehört.
-	Local $prefix = ""
+	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index passt.
+	;ConsoleWrite("ausgewählter Wert: "&$selectedValue)
 
-	ConsoleWrite("------------------------------------------------------------------")
-	ConsoleWrite("Start (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
+	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
-	;Prüfen ob das Label einen Präfix haben muss (hier dauert es 3 Sekunden)
-	For $i = 0 to UBound($PrefixLabels)-1
+	; Prüfen welche LabelDateien einen Präfix davor haben
+	For $i = 0 to UBound($SectionNames)-1
 
-		Local $temp2 = FileReadToArray($PrefixLabels[$i]) ; zwischenspeicher der
+		Local $temp = $SectionNames[$i]
+
+		Local $getPraefix = IniRead($INIFile,$temp,"Labelprefix","wurde nicht gefunden")
+
+		; fügt dem Array das Label dateien mit Prefix enthält werte hinzu
+		if $getPraefix <> "" and $getPraefix <> "wurde nicht gefunden" Then
+
+			_ArrayAdd($PrefixLabels,IniRead($INIFile,$temp,"Labelfile",0))
+
+		EndIf
+	Next
+
+	;_ArrayDisplay($PrefixLabels)
+	Local $isFound = false
+
+	For $n = 0 to UBound($PrefixLabels)-1
+
+		Local $temp2 = FileReadToArray($PrefixLabels[$n]) ; zwischenspeicher der
 		Local $Labels[0]
 
 		;_ArrayDisplay($temp2,"temp2")
 
 		;den Namen von dem Text trennen
-		For $n = 0 to UBound($temp2)-1
-			Global $tempValue  = StringSplit($temp2[$n],"=")
-
+		For $i = 0 to UBound($temp2)-1
+			Local $tempValue  = StringSplit($temp2[$i],"=")
 			_ArrayAdd($Labels,$tempValue[1])
-
 		Next
 
-		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; Sucht den ausgewählten Wert in den Dateien die einen Prefix haben
+		;_ArrayDisplay($Labels,"zu durchsuchendes Array")
+		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; enthält den Rückgabewert der Suche
 
+		; MsgBox(0,"Rückgabewert",$returnValueSearch)
 		if $returnValueSearch  <> -1 Then
+			$isFound = True
+			;MsgBox(0,"","die Datei konnte gefunden werden")
+		else
+
+		EndIf
+
+		; wenn es gefunden wurde soll es an der Stelle
+
+		if $isFound == true then
+
+			;MsgBox(0,"","Prefixlabels: "&$PrefixLabels[$n])
+
+			;Durchgehen in welcher Section der Pfad zu finden ist
 			For $i = 1 to UBound($SectionNames)-1
 
 				Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
-				if $comparativeValue == $PrefixLabels[$i] Then
+				if $comparativeValue == $PrefixLabels[$n] Then
 
 						$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
+						;MsgBox(0," gefundenener Prefix: ",$prefix)
 
 				EndIf
 			Next
+
+			;ConsoleWrite("Labelprefix: "&$prefix)
+			;MsgBox(0,"","Labelprefix: "& $prefix)
+
 			ExitLoop
-		EndIf
-
+		Endif
 	Next
-	ConsoleWrite("Ende (Suche ob ein Präfix davor steht): " & @MIN &":"&@SEC&@CRLF )
-	ConsoleWrite("------------------------------------------------------------------")
+			;Übernimmt das ausgewählte Label
+			;Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-	_ClipBoard_SetData("" &$prefix & $SelectedValue)
+			;Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
 
-	$prefix = ""
+			_ClipBoard_SetData("" &$prefix & $SelectedValue)
+
+			$prefix = ""
 
 EndFunc
