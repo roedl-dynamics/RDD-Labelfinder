@@ -122,22 +122,6 @@ Func ReadIN()
 					EndIf
 				EndIf
 			next
-
-			; Speichern welche Dateien einen Prefix haben (um später den SelectedValue zu suchen)
-				For $i = 0 to UBound($SectionNames)-1
-
-					Local $temp = $SectionNames[$i]
-
-					Local $getPraefix = IniRead($INIFile,$temp,"Labelprefix","wurde nicht gefunden")
-
-					; fügt dem Array das Label dateien mit Prefix enthält werte hinzu
-					if $getPraefix <> "" and $getPraefix <> "wurde nicht gefunden" Then
-
-						_ArrayAdd($PrefixLabels,IniRead($INIFile,$temp,"Labelfile",0))
-
-					EndIf
-				Next
-				_ArrayDisplay($PrefixLabels)
 			Main()
 EndFunc
 
@@ -197,8 +181,9 @@ Func openGUI()
 			Case $TakeOverButton
 				ConsoleWrite("Start:  " & @MIN &":"&@SEC&@CRLF)
 				TakeOver()
-				ConsoleWrite("Ende:  " & @MIN &":" &@SEC&@CRLF)
 				GUIDelete($Form1)
+				ConsoleWrite("Ende:  " & @MIN &":" &@SEC&@CRLF)
+				ConsoleWrite("---------------------------------"&@CRLF)
 				Main()
 			Case $GUI_EVENT_RESIZED
 				Local $NewSize = WinGetPos($Form1)
@@ -283,7 +268,7 @@ Func TakeOver()
 
 	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index passt.
+	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index gehört.
 	;ConsoleWrite("ausgewählter Wert: "&$selectedValue)
 
 	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
@@ -303,9 +288,9 @@ Func TakeOver()
 		EndIf
 	Next
 
-	;_ArrayDisplay($PrefixLabels)
 	Local $isFound = false
 
+	;
 	For $n = 0 to UBound($PrefixLabels)-1
 
 		Local $temp2 = FileReadToArray($PrefixLabels[$n]) ; zwischenspeicher der
@@ -315,19 +300,17 @@ Func TakeOver()
 
 		;den Namen von dem Text trennen
 		For $i = 0 to UBound($temp2)-1
-			Local $tempValue  = StringSplit($temp2[$i],"=")
-			_ArrayAdd($Labels,$tempValue[1])
+			if StringLeft($temp2[$i],1) <> " " then
+				Global $tempValue = StringSplit($temp2[$i],"=")
+				_ArrayAdd($Labels,$tempValue[1])
+			EndIf
 		Next
-
+		;_ArrayDisplay($Labels,"Labels die durchsucht werden müssen")
 		;_ArrayDisplay($Labels,"zu durchsuchendes Array")
-		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; enthält den Rückgabewert der Suche
+		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
 
-		; MsgBox(0,"Rückgabewert",$returnValueSearch)
 		if $returnValueSearch  <> -1 Then
 			$isFound = True
-			;MsgBox(0,"","die Datei konnte gefunden werden")
-		else
-
 		EndIf
 
 		; wenn es gefunden wurde soll es an der Stelle
@@ -349,15 +332,14 @@ Func TakeOver()
 			Next
 
 			;ConsoleWrite("Labelprefix: "&$prefix)
-			;MsgBox(0,"","Labelprefix: "& $prefix)
 
 			ExitLoop
 		Endif
 	Next
-			;Übernimmt das ausgewählte Label
-			;Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
+			; der Teil muss auch bei einem Umschreiben so bleiben
+			Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-			;Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
+			Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
 
 			_ClipBoard_SetData("" &$prefix & $SelectedValue)
 
