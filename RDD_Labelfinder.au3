@@ -33,51 +33,6 @@ Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
 ReadIN()
 
-Func ReadIN2()
-	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
-	;_ArrayDisplay($SectionNames)
-	For $i = 1 to UBound($SectionNames)-1
-		Global $SectionName = $SectionNames[$i]
-		if $SectionName == "System" Then
-			$MaxSearchResults = IniRead($INIFile,$SectionName,"MaxSearchResults",0)
-		elseif $SectionName == "General" Then
-			; passiert nichts
-		Else
-			Global $tmpLabelPath = IniRead($INIFile,$SectionName,"Labelfile","")
-			Global $DateiInArray = FileReadToArray($tmpLabelPath)
-			;_ArrayDisplay($DateiInArray,"Komplette Datei")
-			Global $LabelPrefix = IniRead($INIFile,$SectionName,"Labelprefix","")
-
-			Local $newArray[0]
-			For $n = 0 to UBound($DateiInArray)-1
-				Local $line = StringStripWS($DateiInArray[$n],3)
-				If StringLeft($line,1) <> ";" Then
-					ConsoleWrite("fügt "& $line &"hinzu"&@CRLF)
-					_ArrayAdd($newArray,$line)
-
-				EndIf
-			Next
-
-		;_ArrayDisplay($newArray)
-		ConsoleWrite("bis hier läuft es")
-			For $m = 0 to Ubound($newArray)-1
-				Local $tmpArray = StringSplit($newArray[$m],"=")
-				Global $label = $tmpArray[1]
-				Global $text = $tmpArray[2]
-				Global $prefix = $LabelPrefix & ":"
-				Global $sFill =  $label &"|"& $text &"|"& $prefix
-				_ArrayAdd($Daten,$sFill)
-			Next
-		EndIf
-	next
-	;_ArrayDisplay($Daten)
-	For $i = 0 to Ubound($Daten)-1
-		ConsoleWrite("Ausgabe: "& $Daten[$i][0]&" "& $Daten[$i][1]&" "& $Daten[$i][2])
-	next
-	ConsoleWrite("Methode ist durchgelaufen")
-	Main()
-EndFunc
-
 Func ReadIN()
 	Global  $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 
@@ -108,7 +63,7 @@ Func ReadIN()
 						Local $label = $tempValue[1]
 						ConsoleWrite("Label: "& $label)
 						;Local $text = $tempValue[2]
-						Local $sFill =  $LabelPrefix &"|"& $label &"|"&""
+						;Local $sFill =  $LabelPrefix &"|"& $label &"|"&""
 						;_ArrayAdd($Daten,$sFill)
 
 
@@ -122,6 +77,7 @@ Func ReadIN()
 					EndIf
 				EndIf
 			next
+			;Console
 			Main()
 EndFunc
 
@@ -178,6 +134,7 @@ Func openGUI()
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
 				search()
+				;MsgBox(0,"","Suche ist durchgelaufen")
 			Case $TakeOverButton
 				ConsoleWrite("Start:  " & @MIN &":"&@SEC&@CRLF)
 				TakeOver()
@@ -220,6 +177,7 @@ func search()
 
 		;_ArrayDisplay($SearchResultsLabels,"SearchLabels")
 
+
 		For $i = 0 to UBound($AllLabels)-1
 			If StringRegExp($AllLabels[$i],";") Then
 				; passiert nichts
@@ -238,7 +196,6 @@ func search()
 					EndIf
 			EndIf
 		Next
-		;_ArrayDisplay($SearchResultsLabels)
 
 		If UBound($SearchResultsLabels) >  $MaxSearchResults Then
 
@@ -306,7 +263,7 @@ Func TakeOver()
 			EndIf
 		Next
 		;_ArrayDisplay($Labels,"Labels die durchsucht werden müssen")
-		;_ArrayDisplay($Labels,"zu durchsuchendes Array")
+
 		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
 
 		if $returnValueSearch  <> -1 Then
@@ -318,7 +275,7 @@ Func TakeOver()
 		if $isFound == true then
 
 			;MsgBox(0,"","Prefixlabels: "&$PrefixLabels[$n])
-
+			;_ArrayDisplay($PrefixLabels,"Labels in denen die Pfade gespiechert werden")
 			;Durchgehen in welcher Section der Pfad zu finden ist
 			For $i = 1 to UBound($SectionNames)-1
 
