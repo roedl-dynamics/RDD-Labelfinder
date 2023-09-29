@@ -11,7 +11,7 @@ Opt ("MustDeclareVars",1)
 #include <GUIConstantsEx.au3>
 #include <StaticConstants.au3>
 #include <Array.au3>
-#include <TrayConstants.au3> ; benötigt um das Tool im Hintergrund laufen zu lassen
+#include <TrayConstants.au3>
 #include <File.au3>
 #include <Clipboard.au3>
 #include <GuiListView.au3>
@@ -19,8 +19,7 @@ Opt ("MustDeclareVars",1)
 ;Opt("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
 Global $INIFile = "AutoLabelSearch.au3.ini"
-Global $INIFile = "AutoLabelSearch.au3.ini"
-Global $MaxSearchResults = 0
+Global $MaxSearchResults
 Global $AllLabels[0]
 Global $SearchResultsLabels[0]
 Global $SearchResultsText[0]
@@ -28,7 +27,6 @@ Global $Imagepath = @ScriptDir &"\Search.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
 Global $prefix = ""
-Global $Daten[0][3] ; speichert das Label, Text,Kommentar und den Prefix
 Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
 ReadIN()
@@ -40,8 +38,8 @@ Func ReadIN()
 			Global $SectionName = $SectionNames[$i]
 				ConsoleWrite("Sectionname: "&$SectionName&@CRLF)
 				if $SectionName == "System" Then
+
 					$MaxSearchResults = IniRead($INIFile,$SectionName,"MaxSearchResults",0)
-					;ConsoleWrite("$MaxSearchResults=" & $MaxSearchResults & @CRLF)
 
 				ElseIf $SectionName == "General " Then
 					; hier soll nichts passieren
@@ -50,40 +48,18 @@ Func ReadIN()
 					Global $tmpLabelFile = IniRead($INIFile,$SectionName,"Labelfile","") ; enthält die Pfade zu den Dateien aus der INI
 					Global $LabelPrefix = IniRead($INIFile,$SectionName,"Labelprefix","nichts gefunden") ; enthält dem Prefix der aktuellen SectionName
 
-
 					if FileExists($tmpLabelFile) then ; wenn das File existiert
 						Global $CurrentLabelFile = FileReadToArray($tmpLabelFile)
-
-						; hier das Array Trennen wie der TakeOver Function
-						for $n = 0 to Ubound($CurrentLabelFile)-1
-							Global $tempValue = StringSplit($CurrentLabelFile[$n],"=")
-							;_ArrayDisplay($tempValue)
-						next
-						;_ArrayDisplay($Daten)
-						Local $label = $tempValue[1]
-						ConsoleWrite("Label: "& $label)
-						;Local $text = $tempValue[2]
-						;Local $sFill =  $LabelPrefix &"|"& $label &"|"&""
-						;_ArrayAdd($Daten,$sFill)
-
-
-						; zu dem anderen Array hinzugfügen
 						_ArrayAdd($AllLabels,$CurrentLabelFile)
-
-						; Label, Text und Prefix zu dem 2D Array hinzufügen
-
 					else
 						MsgBox(1,@ScriptName,"FileNotFound")
 					EndIf
 				EndIf
 			next
-			;Console
 			Main()
 EndFunc
 
 Func Main()
-	;einlesen der Konfigurationsdatei
-	$INIFile = "AutoLabelSearch.au3.ini"
 
 	TraySetState($TRAY_ICONSTATE_SHOW)
 
@@ -158,9 +134,8 @@ func search()
 
 		_GUICtrlListView_DeleteAllItems($hListView) ; löscht alle Einträge in der ListView
 
-		;ConsoleWrite("Der Größe Index des Arrays ist: " & UBound($SearchResultsLabels)-1&@CRLF)
 		Local $counter = 0 ; zählt die gefundenen Treffer
-		Local $eingabe = GUICtrlRead($InputField) ;liest das EingabeFeld aus
+		Local $eingabe = GUICtrlRead($InputField)
 
 		if $eingabe == "" then
 			MsgBox(48,"Achtung","leeres Suchfeld")
@@ -174,9 +149,6 @@ func search()
 			_ArrayDelete($SearchResultsText,$i)
 
 		Next
-
-		;_ArrayDisplay($SearchResultsLabels,"SearchLabels")
-
 
 		For $i = 0 to UBound($AllLabels)-1
 			If StringRegExp($AllLabels[$i],";") Then
@@ -208,6 +180,7 @@ func search()
 				Next
 			ElseIf $returnValue == $IDNO Then
 				for $i = 0 to $MaxSearchResults
+
 					GUICtrlCreateListViewItem($SearchResultsLabels[$i] & "|"&$SearchResultsText[$i]& "|", $hListView)
 
 				Next
@@ -218,15 +191,14 @@ func search()
 			GUICtrlCreateListViewItem("kein Treffer gefunden" & "|"&""& "|", $hListView)
 
 		EndIf
-		;MsgBox(0,"","Suche ist durchgelaufen ")
 EndFunc
+
 
 Func TakeOver()
 
 	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
 	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index gehört.
-	;ConsoleWrite("ausgewählter Wert: "&$selectedValue)
 
 	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
@@ -247,13 +219,10 @@ Func TakeOver()
 
 	Local $isFound = false
 
-	;
 	For $n = 0 to UBound($PrefixLabels)-1
 
 		Local $temp2 = FileReadToArray($PrefixLabels[$n]) ; zwischenspeicher der
 		Local $Labels[0]
-
-		;_ArrayDisplay($temp2,"temp2")
 
 		;den Namen von dem Text trennen
 		For $i = 0 to UBound($temp2)-1
@@ -262,20 +231,17 @@ Func TakeOver()
 				_ArrayAdd($Labels,$tempValue[1])
 			EndIf
 		Next
-		;_ArrayDisplay($Labels,"Labels die durchsucht werden müssen")
 
-		Local $returnValueSearch = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
+		Local $returnSearchValue = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
 
-		if $returnValueSearch  <> -1 Then
+		if $returnSearchValue  <> -1 Then
+
 			$isFound = True
+
 		EndIf
 
-		; wenn es gefunden wurde soll es an der Stelle
+		if $isFound == True then
 
-		if $isFound == true then
-
-			;MsgBox(0,"","Prefixlabels: "&$PrefixLabels[$n])
-			;_ArrayDisplay($PrefixLabels,"Labels in denen die Pfade gespiechert werden")
 			;Durchgehen in welcher Section der Pfad zu finden ist
 			For $i = 1 to UBound($SectionNames)-1
 
@@ -283,23 +249,16 @@ Func TakeOver()
 				if $comparativeValue == $PrefixLabels[$n] Then
 
 						$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
-						;MsgBox(0," gefundenener Prefix: ",$prefix)
 
 				EndIf
 			Next
 
-			;ConsoleWrite("Labelprefix: "&$prefix)
-
 			ExitLoop
 		Endif
 	Next
-			; der Teil muss auch bei einem Umschreiben so bleiben
-			Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
 
-			Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; schreibt den ausgewählten Wert in die ListView
+	_ClipBoard_SetData("" &$prefix & $SelectedValue)
 
-			_ClipBoard_SetData("" &$prefix & $SelectedValue)
-
-			$prefix = ""
+	$prefix = ""
 
 EndFunc
