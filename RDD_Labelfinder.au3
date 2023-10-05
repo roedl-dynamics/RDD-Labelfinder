@@ -109,14 +109,15 @@ Func openGUI()
 				Main()
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
+				;ConsoleWrite("Start Searchfunktion: "& @MIN &":"&@SEC& @CRLF)
 				search()
-				;MsgBox(0,"","Suche ist durchgelaufen")
+				;ConsoleWrite("Ende Searchfunktion: "& @MIN &":"&@SEC&@CRLF)
 			Case $TakeOverButton
-				ConsoleWrite("Start:  " & @MIN &":"&@SEC&@CRLF)
+				;ConsoleWrite("Start:  " & @MIN &":"&@SEC&@CRLF)
 				TakeOver()
 				GUIDelete($Form1)
-				ConsoleWrite("Ende:  " & @MIN &":" &@SEC&@CRLF)
-				ConsoleWrite("---------------------------------"&@CRLF)
+				;ConsoleWrite("Ende:  " & @MIN &":" &@SEC&@CRLF)
+				;ConsoleWrite("---------------------------------"&@CRLF)
 				Main()
 			Case $GUI_EVENT_RESIZED
 				Local $NewSize = WinGetPos($Form1)
@@ -186,6 +187,7 @@ func search()
 				Next
 			EndIf
 		EndIf
+
 		if $counter == 0 Then
 
 			GUICtrlCreateListViewItem("kein Treffer gefunden" & "|"&""& "|", $hListView)
@@ -203,6 +205,7 @@ Func TakeOver()
 	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 
 	; Prüfen welche LabelDateien einen Präfix davor haben
+	ConsoleWrite("Start: "&@MIN&":"&@SEC&@CRLF)
 	For $i = 0 to UBound($SectionNames)-1
 
 		Local $temp = $SectionNames[$i]
@@ -216,21 +219,28 @@ Func TakeOver()
 
 		EndIf
 	Next
+	;ConsoleWrite("Ende einlesen welche Dateinen einen Prefix davor haben: "&@MIN&":"&@SEC&@CRLF)
 
+	ConsoleWrite("Start(Prüfen ob ein Präfix davor muss ):"&@MIN&":"&@SEC&@CRLF)
 	Local $isFound = false
 
 	For $n = 0 to UBound($PrefixLabels)-1
 
-		Local $temp2 = FileReadToArray($PrefixLabels[$n]) ; zwischenspeicher der
+		; hier nur die relevanten Teile aus dem File
 		Local $Labels[0]
 
-		;den Namen von dem Text trennen
-		For $i = 0 to UBound($temp2)-1
-			if StringLeft($temp2[$i],1) <> " " then
-				Global $tempValue = StringSplit($temp2[$i],"=")
-				_ArrayAdd($Labels,$tempValue[1])
+		Local $FileOpen = FileOpen($PrefixLabels[$n],$Fo_Read)
+		Local $FileRead
+
+		while 1
+			$FileRead = FileReadLine($FileOpen)
+			If @error then ExitLoop
+			if StringLeft($FileRead,1) <> " " Then
+				Local $tmp = StringSplit($FileRead,"=")
+				_ArrayAdd($Labels,$tmp[1])
 			EndIf
-		Next
+		WEnd
+
 
 		Local $returnSearchValue = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
 
@@ -246,6 +256,7 @@ Func TakeOver()
 			For $i = 1 to UBound($SectionNames)-1
 
 				Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
+
 				if $comparativeValue == $PrefixLabels[$n] Then
 
 						$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
@@ -256,6 +267,9 @@ Func TakeOver()
 			ExitLoop
 		Endif
 	Next
+	ConsoleWrite("Ende: suchen ob ein Präfix davor muss: " &@MIN&":"&@SEC&@CRLF)
+	ConsoleWrite("Ende: "&@MIN&":"&@SEC&@CRLF)
+	ConsoleWrite("----------------------------------------------------------------------------")
 
 	_ClipBoard_SetData("" &$prefix & $SelectedValue)
 
