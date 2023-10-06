@@ -28,8 +28,58 @@ Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
 Global $prefix = ""
 Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
+Global $Werte [0][4]
 
-ReadIN()
+ReadIN2()
+
+
+Func ReadIn2()
+	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
+	;_ArrayDisplay($SectionNames)
+	For $i = 1 to UBound($SectionNames)-1
+		Local $SectionName = $SectionNames[$i]
+
+		if $SectionName == "System" then
+
+			$MaxSearchResults = IniRead($INIFile,$SectionName,"MaxSearchResults",0)
+
+		elseIf $SectionName == "General" Then
+			; hier passiert nichts
+
+		else
+				Local $tmpFilePath = IniRead($INIFile,$SectionName, "Labelfile","")
+				Local $LabelPrefix = IniRead($INIFile,$SectionName,"Labelprefix","")
+
+				if FileExists($tmpFilePath) Then
+					Local $FileContent = FileReadToArray($tmpFilePath)
+
+				EndIf
+				; String left um herauszufinden womit die Zeile beginnt
+				For $n = 0 to Ubound($FileContent)-1
+
+					If StringLeft($FileContent[$n],1) <> " " Then
+						local $tmpArray = StringSplit($FileContent[$n],"=")
+						;_ArrayDisplay($tmpArray)
+						Local $label = $tmpArray[1]
+						Local $text = $tmpArray[2]
+						Local $comment = "Hier muss der Kommentar hin"
+						Local $fill = $label&"|"&$text&"|"&$comment&"|"&$LabelPrefix
+						_ArrayAdd($Werte,$fill)
+
+					else
+						ConsoleWrite("Kommentar" & @CRLF)
+
+					EndIf
+
+				next
+
+		EndIf
+
+
+	next
+	_ArrayDisplay($Werte)
+	;Main()
+EndFunc
 
 Func ReadIN()
 	Global  $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
@@ -104,20 +154,14 @@ Func openGUI()
 		Local $nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE
-				;GUISetState(@SW_HIDE,$Form1)
 				GUIDelete($Form1)
 				Main()
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
-				;ConsoleWrite("Start Searchfunktion: "& @MIN &":"&@SEC& @CRLF)
 				search()
-				;ConsoleWrite("Ende Searchfunktion: "& @MIN &":"&@SEC&@CRLF)
 			Case $TakeOverButton
-				;ConsoleWrite("Start:  " & @MIN &":"&@SEC&@CRLF)
 				TakeOver()
 				GUIDelete($Form1)
-				;ConsoleWrite("Ende:  " & @MIN &":" &@SEC&@CRLF)
-				;ConsoleWrite("---------------------------------"&@CRLF)
 				Main()
 			Case $GUI_EVENT_RESIZED
 				Local $NewSize = WinGetPos($Form1)
