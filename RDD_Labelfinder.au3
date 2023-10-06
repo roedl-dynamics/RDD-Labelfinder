@@ -31,10 +31,10 @@ Global $prefix = ""
 Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 Global $Werte [0][4]
 
-ReadIN2()
+ReadIN()
 
 
-Func ReadIn2()
+Func ReadIn()
 	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 	;_ArrayDisplay($SectionNames)
 	For $i = 1 to UBound($SectionNames)-1
@@ -83,33 +83,6 @@ Func ReadIn2()
 	;search2()
 EndFunc
 
-Func ReadIN()
-	Global  $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
-
-			For $i = 1 to UBound($SectionNames)-1
-			Global $SectionName = $SectionNames[$i]
-				ConsoleWrite("Sectionname: "&$SectionName&@CRLF)
-				if $SectionName == "System" Then
-
-					$MaxSearchResults = IniRead($INIFile,$SectionName,"MaxSearchResults",0)
-
-				ElseIf $SectionName == "General " Then
-					; hier soll nichts passieren
-				Else
-					; hier wird das Array befüllt
-					Global $tmpLabelFile = IniRead($INIFile,$SectionName,"Labelfile","") ; enthält die Pfade zu den Dateien aus der INI
-					Global $LabelPrefix = IniRead($INIFile,$SectionName,"Labelprefix","nichts gefunden") ; enthält dem Prefix der aktuellen SectionName
-
-					if FileExists($tmpLabelFile) then ; wenn das File existiert
-						Global $CurrentLabelFile = FileReadToArray($tmpLabelFile)
-						_ArrayAdd($AllLabels,$CurrentLabelFile)
-					else
-						MsgBox(1,@ScriptName,"FileNotFound")
-					EndIf
-				EndIf
-			next
-			Main()
-EndFunc
 
 Func Main()
 
@@ -160,7 +133,7 @@ Func openGUI()
 				Main()
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
-				search2()
+				search()
 			Case $TakeOverButton
 				TakeOver()
 				GUIDelete($Form1)
@@ -176,7 +149,7 @@ Func openGUI()
 	WEnd
 EndFunc
 
-func search2()
+func search()
 	_GUICtrlListView_DeleteAllItems($hListView) ; löscht alle Einträge in der ListView
 
 	Local $counter = 0 ; zählt die gefundenen Treffer
@@ -218,70 +191,6 @@ func search2()
 EndFunc
 
 
-func search()
-
-		_GUICtrlListView_DeleteAllItems($hListView) ; löscht alle Einträge in der ListView
-
-		Local $counter = 0 ; zählt die gefundenen Treffer
-		Local $eingabe = GUICtrlRead($InputField)
-
-		if $eingabe == "" then
-			MsgBox(48,"Achtung","leeres Suchfeld")
-		EndIf
-		ConsoleWrite("gesuchter Wert: " & $eingabe& @CRLF)
-
-		; leert die Resultate der alten Suche (läuft Rückwärts da das Array immer kleiner wird)
-		For $i = Ubound($SearchResultsLabels)-1 to 0 step -1
-
-			_ArrayDelete($SearchResultsLabels,$i)
-			_ArrayDelete($SearchResultsText,$i)
-
-		Next
-
-		_ArrayDisplay($AllLabels)
-		For $i = 0 to UBound($AllLabels)-1
-			If StringRegExp($AllLabels[$i],";") Then
-				; passiert nichts
-
-				else
-					If StringRegExp($AllLabels[$i],$eingabe) Then
-
-							Local $tempArray = StringSplit($AllLabels[$i],"=")
-
-							_ArrayAdd($SearchResultsLabels,$tempArray[1]) ; Fügt dem Array mit dem den Gefundenen Labels das Label hinzu
-
-							_ArrayAdd($SearchResultsText,$tempArray[UBound($tempArray)-1]) ;Fügt dem Array mit den Gefundenen Text ein Text hinzu
-
-							$counter = $counter+1
-
-					EndIf
-			EndIf
-		Next
-
-		If UBound($SearchResultsLabels) >  $MaxSearchResults Then
-
-			Local $returnValue = MsgBox($MB_YESNO,"Mehr als "&$MaxSearchResults,"möchten sie mehr anzeigen ?",15)
-			if $returnValue == $IDYES  or $returnValue == -1 Then
-				For $i = 0 to UBound($SearchResultsLabels)-1
-
-					GUICtrlCreateListViewItem($SearchResultsLabels[$i] & "|"&$SearchResultsText[$i]& "|", $hListView)
-
-				Next
-			ElseIf $returnValue == $IDNO Then
-				for $i = 0 to $MaxSearchResults
-
-					GUICtrlCreateListViewItem($SearchResultsLabels[$i] & "|"&$SearchResultsText[$i]& "|", $hListView)
-
-				Next
-			EndIf
-		EndIf
-
-		if $counter == 0 Then
-
-			GUICtrlCreateListViewItem("kein Treffer gefunden" & "|"&""& "|", $hListView)
-
-		EndIf
-EndFunc
 
 
 Func TakeOver()
