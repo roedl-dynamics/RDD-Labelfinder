@@ -23,6 +23,7 @@ Global $MaxSearchResults
 Global $AllLabels[0]
 Global $SearchResultsLabels[0]
 Global $SearchResultsText[0]
+Global $SearchResults[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
@@ -78,7 +79,8 @@ Func ReadIn2()
 
 	next
 	_ArrayDisplay($Werte)
-	;Main()
+	Main()
+	;search2()
 EndFunc
 
 Func ReadIN()
@@ -158,7 +160,7 @@ Func openGUI()
 				Main()
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
-				search()
+				search2()
 			Case $TakeOverButton
 				TakeOver()
 				GUIDelete($Form1)
@@ -172,6 +174,47 @@ Func openGUI()
 				EndIf
 		EndSwitch
 	WEnd
+EndFunc
+
+func search2()
+	_GUICtrlListView_DeleteAllItems($hListView) ; löscht alle Einträge in der ListView
+
+	Local $counter = 0 ; zählt die gefundenen Treffer
+
+	Local $eingabe = GUICtrlRead($InputField)
+
+	if $eingabe == "" then
+		MsgBox(48,"Achtung","leeres Suchfeld")
+
+	EndIf
+
+	; leert die Resultate der alten Suche (läuft Rückwärts da das Array immer kleiner wird)
+
+
+	; hier die Labels durchgehen
+	Local $col = 0
+	For $Row = 0 to UBound($Werte,1)-1
+		If $counter == $MaxSearchResults Then
+			 Local $returnValue = MsgBox($MB_YESNO, "Achtung", "Möchten sie mehr als "&$MaxSearchResults&"anzeigen lassen ?")
+			 if $returnValue == $IDYES or $returnValue == 6 Then
+
+			 Else
+				 ExitLoop
+
+			EndIf
+		EndIf
+
+		If StringRegExp($Werte[$Row][$col], $eingabe) then
+				$counter = $counter +1
+				GUICtrlCreateListViewItem($Werte[$Row][0]&"|"&$Werte[$Row][1]&"|"&"Kommentar" , $hListView)
+		EndIf
+
+	next
+	if $counter = 0 then
+		GUICtrlCreateListViewItem("kein Treffer gefunden",$hListView)
+	EndIf
+
+
 EndFunc
 
 
@@ -195,6 +238,7 @@ func search()
 
 		Next
 
+		_ArrayDisplay($AllLabels)
 		For $i = 0 to UBound($AllLabels)-1
 			If StringRegExp($AllLabels[$i],";") Then
 				; passiert nichts
