@@ -27,14 +27,13 @@ Global $SearchResults[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
-Global $prefix = ""
 Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 Global $Werte [0][4]
 
 ReadIN()
 
-
 Func ReadIn()
+	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
 	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 	;_ArrayDisplay($SectionNames)
 	For $i = 1 to UBound($SectionNames)-1
@@ -68,7 +67,7 @@ Func ReadIn()
 						_ArrayAdd($Werte,$fill)
 
 					else
-						ConsoleWrite("Kommentar" & @CRLF)
+						;ConsoleWrite("Kommentar" & @CRLF)
 
 					EndIf
 
@@ -78,7 +77,8 @@ Func ReadIn()
 
 
 	next
-	_ArrayDisplay($Werte)
+	ConsoleWrite("Start: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
+	;_ArrayDisplay($Werte)
 	Main()
 	;search2()
 EndFunc
@@ -163,14 +163,13 @@ func search()
 
 	; leert die Resultate der alten Suche (läuft Rückwärts da das Array immer kleiner wird)
 
-
 	; hier die Labels durchgehen
 	Local $col = 0
 	For $Row = 0 to UBound($Werte,1)-1
 		If $counter == $MaxSearchResults Then
 			 Local $returnValue = MsgBox($MB_YESNO, "Achtung", "Möchten sie mehr als "&$MaxSearchResults&"anzeigen lassen ?")
 			 if $returnValue == $IDYES or $returnValue == 6 Then
-
+				; hier passiert nichts
 			 Else
 				 ExitLoop
 
@@ -190,86 +189,18 @@ func search()
 
 EndFunc
 
-
-
-
 Func TakeOver()
+	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView)
 
-	Local $selectedIndex =  _GUICtrlListView_GetSelectionMark($hListView) ;Gibt den Index des Ausgewählten Wertes zurück
+	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex)
 
-	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex) ; ermittelt welcher Wert zu dem Index gehört.
+	Local $index = _ArraySearch($Werte,$SelectedValue)
 
-	Local $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
+	if $Werte[$index][3] <> "" then
 
-	; Prüfen welche LabelDateien einen Präfix davor haben
-	ConsoleWrite("Start: "&@MIN&":"&@SEC&@CRLF)
-	For $i = 0 to UBound($SectionNames)-1
+		_ClipBoard_SetData($Werte[$index][3]&":"& $Werte[$index][0])
 
-		Local $temp = $SectionNames[$i]
-
-		Local $getPraefix = IniRead($INIFile,$temp,"Labelprefix","wurde nicht gefunden")
-
-		; fügt dem Array das Label dateien mit Prefix enthält werte hinzu
-		if $getPraefix <> "" and $getPraefix <> "wurde nicht gefunden" Then
-
-			_ArrayAdd($PrefixLabels,IniRead($INIFile,$temp,"Labelfile",0))
-
-		EndIf
-	Next
-	;ConsoleWrite("Ende einlesen welche Dateinen einen Prefix davor haben: "&@MIN&":"&@SEC&@CRLF)
-
-	ConsoleWrite("Start(Prüfen ob ein Präfix davor muss ):"&@MIN&":"&@SEC&@CRLF)
-	Local $isFound = false
-
-	For $n = 0 to UBound($PrefixLabels)-1
-
-		; hier nur die relevanten Teile aus dem File
-		Local $Labels[0]
-
-		Local $FileOpen = FileOpen($PrefixLabels[$n],$Fo_Read)
-		Local $FileRead
-
-		while 1
-			$FileRead = FileReadLine($FileOpen)
-			If @error then ExitLoop
-			if StringLeft($FileRead,1) <> " " Then
-				Local $tmp = StringSplit($FileRead,"=")
-				_ArrayAdd($Labels,$tmp[1])
-			EndIf
-		WEnd
-
-
-		Local $returnSearchValue = _ArraySearch($Labels,$SelectedValue) ; variable enthält den Rückgabewert der Suche
-
-		if $returnSearchValue  <> -1 Then
-
-			$isFound = True
-
-		EndIf
-
-		if $isFound == True then
-
-			;Durchgehen in welcher Section der Pfad zu finden ist
-			For $i = 1 to UBound($SectionNames)-1
-
-				Local $comparativeValue = IniRead($INIFile,$SectionNames[$i],"Labelfile","")
-
-				if $comparativeValue == $PrefixLabels[$n] Then
-
-						$prefix = IniRead($INIFile,$SectionNames[$i] ,"Labelprefix", "kein Wert gefunden")& ":"
-
-				EndIf
-			Next
-
-			ExitLoop
-		Endif
-	Next
-	ConsoleWrite("Ende: suchen ob ein Präfix davor muss: " &@MIN&":"&@SEC&@CRLF)
-	ConsoleWrite("Ende: "&@MIN&":"&@SEC&@CRLF)
-	ConsoleWrite("----------------------------------------------------------------------------")
-
-	_ClipBoard_SetData("" &$prefix & $SelectedValue)
-
-	$prefix = ""
-
+	Else
+		_ClipBoard_SetData($Werte[$index][0])
+	EndIf
 EndFunc
