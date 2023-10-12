@@ -1,6 +1,15 @@
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Res_Comment=D365 Tool für eine schnelle Labelsuche
+#AutoIt3Wrapper_Res_Description=RD Labelfinder
+#AutoIt3Wrapper_Res_Fileversion=1.0
+#AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
+#AutoIt3Wrapper_Res_ProductName=RD Labelfinder
+#AutoIt3Wrapper_Res_CompanyName=Rödl Dynamics GmbH
+#AutoIt3Wrapper_Res_Language=1031
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 ; Search Icon Source: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html
 ;#NoTrayIcon
-;Test2
+
 Opt ("MustDeclareVars",1)
 #include <AutoItConstants.au3>
 #include <StringConstants.au3>
@@ -36,8 +45,10 @@ Func ReadIn()
 	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
 	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 	;_ArrayDisplay($SectionNames)
+
 	For $i = 1 to UBound($SectionNames)-1
 		Local $SectionName = $SectionNames[$i]
+		ConsoleWrite($SectionName&@CRLF)
 
 		if $SectionName == "System" then
 
@@ -47,42 +58,73 @@ Func ReadIn()
 			; hier passiert nichts
 
 		else
-				Local $tmpFilePath = IniRead($INIFile,$SectionName, "Labelfile","")
-				Local $LabelPrefix = IniRead($INIFile,$SectionName,"Labelprefix","")
-
-				if FileExists($tmpFilePath) Then
-					Local $FileContent = FileReadToArray($tmpFilePath)
-
-				EndIf
-				; String left um herauszufinden womit die Zeile beginnt
-				For $n = 0 to Ubound($FileContent)-1
-
-					If StringLeft($FileContent[$n],1) <> " " Then
-						local $tmpArray = StringSplit($FileContent[$n],"=")
-						;_ArrayDisplay($tmpArray)
-						Local $label = $tmpArray[1]
-						Local $text = $tmpArray[2]
-						Local $comment = "Hier muss der Kommentar hin"
-						Local $fill = $label&"|"&$text&"|"&$comment&"|"&$LabelPrefix
-						_ArrayAdd($Werte,$fill)
-
-					else
-						;ConsoleWrite("Kommentar" & @CRLF)
-
-					EndIf
-
-				next
-
+			Local $SectionContent = _ReadInSection($SectionNames[$i])
+			_ArrayAdd($Werte,$SectionContent)
 		EndIf
 
 
 	next
-	ConsoleWrite("Start: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
+
+	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
 	;_ArrayDisplay($Werte)
 	Main()
-	;search2()
 EndFunc
 
+Func _ReadInSection($pSectionName)
+
+	Local $tmpFilePath = IniRead($INIFile,$pSectionName, "Labelfile","")
+	Local $LabelPrefix = IniRead($INIFile,$pSectionName,"Labelprefix","")
+
+	if Not FileExists($tmpFilePath) Then
+		MsgBox(16,@ScriptName, "Datei " & $tmpFilePath & " wurde nicht gefunden")
+	endif
+
+	Local $FileContent = FileReadToArray($tmpFilePath)
+
+	;_ArrayDisplay($FileContent,"$FileContent");
+
+	Local $FileContent_Rows = Ubound($FileContent)-1
+	ConsoleWrite("$FileContent_Rows="  & $FileContent_Rows & @CRLF)
+	Local $ValuesCurrentFile[$FileContent_Rows][4]
+	;_ArrayDisplay($ValuesCurrentFile)
+
+	Local $n
+	Local $CurrentPos = 0
+
+	For $n = 0 to $FileContent_Rows
+
+		Local $FileContentLine = $FileContent[$n]
+
+
+		; String left um herauszufinden womit die Zeile beginnt
+		If StringLeft($FileContentLine,1) <> " " Then
+			local $tmpArray = StringSplit($FileContentLine,"=")
+			;_ArrayDisplay($tmpArray)
+
+			Local $label = $tmpArray[1]
+			Local $text = $tmpArray[2]
+			Local $comment = ""
+
+			$ValuesCurrentFile[$CurrentPos][0]=$label
+			; ConsoleWrite("Label: "&$label&@CRLF)
+			$ValuesCurrentFile[$CurrentPos][1]=$text
+			; ConsoleWrite("Text: "&$text&@CRLF)
+			$ValuesCurrentFile[$CurrentPos][2]=$comment
+			; ConsoleWrite("Kommentar: "&$comment&@CRLF)
+			$ValuesCurrentFile[$CurrentPos][3]=$LabelPrefix
+			; ConsoleWrite("Prefix: "&$LabelPrefix& @CRLF)
+
+			$CurrentPos += 1
+		EndIf
+
+	next
+
+	 $ValuesCurrentFile = _ArrayExtract($ValuesCurrentFile, 0, $CurrentPos-1) ; Startet bei null und endet bei der letzten Zeile des Files
+
+	;_ArrayDisplay($ValuesCurrentFile)
+	Return $ValuesCurrentFile
+
+EndFunc
 
 Func Main()
 
@@ -164,12 +206,13 @@ func search()
 	; leert die Resultate der alten Suche (läuft Rückwärts da das Array immer kleiner wird)
 
 	; hier die Labels durchgehen
-	Local $col = 0
+	Local $col = 1
 	For $Row = 0 to UBound($Werte,1)-1
 		If $counter == $MaxSearchResults Then
 			 Local $returnValue = MsgBox($MB_YESNO, "Achtung", "Möchten sie mehr als "&$MaxSearchResults&"anzeigen lassen ?")
 			 if $returnValue == $IDYES or $returnValue == 6 Then
 				; hier passiert nichts
+				$counter = $counter+1
 			 Else
 				 ExitLoop
 
@@ -178,14 +221,13 @@ func search()
 
 		If StringRegExp($Werte[$Row][$col], $eingabe) then
 				$counter = $counter +1
-				GUICtrlCreateListViewItem($Werte[$Row][0]&"|"&$Werte[$Row][1]&"|"&"Kommentar" , $hListView)
+				GUICtrlCreateListViewItem($Werte[$Row][0]&"|"&$Werte[$Row][1]&"|"&"" , $hListView)
 		EndIf
 
 	next
 	if $counter = 0 then
 		GUICtrlCreateListViewItem("kein Treffer gefunden",$hListView)
 	EndIf
-
 
 EndFunc
 
