@@ -30,5 +30,5 @@ Once installed, open the RDD-Labelfinder.au3 file with SciTE to open and edit th
 For further informations have a look at the official AutoIt [website](https://www.autoitscript.com/site/autoit-script-editor/installation/).
 <h1> item Source:  </h1>
 
-Search-icon: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html
+Search-icon: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html <br>
 Designer of the Exe-Icon: https://twitter.com/doublejdesign 
