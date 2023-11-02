@@ -1,13 +1,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=..\..\..\Downloads\Double-J-Design-Ravenna-3d-Search-File.ico
 #AutoIt3Wrapper_Res_Comment=D365 Tool für eine schnelle Labelsuche
 #AutoIt3Wrapper_Res_Description=RD Labelfinder
-#AutoIt3Wrapper_Res_Fileversion=1.0
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
 #AutoIt3Wrapper_Res_ProductName=RD Labelfinder
 #AutoIt3Wrapper_Res_CompanyName=Rödl Dynamics GmbH
 #AutoIt3Wrapper_Res_Language=1031
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+
 ; Search Icon Source: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html
+; Link to the Twitter-Account to the Creater of the ICO-File: https://twitter.com/doublejdesign
 ;#NoTrayIcon
 
 Opt ("MustDeclareVars",1)
@@ -29,14 +32,10 @@ Opt ("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
 Global $INIFile = "AutoLabelSearch.au3.ini"
 Global $MaxSearchResults
-Global $AllLabels[0]
-Global $SearchResultsLabels[0]
-Global $SearchResultsText[0]
-Global $SearchResults[0]
+;Global $SearchResults[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
-Global $PrefixLabels[0] ; speichert den Pfad einer Datei mit LabelPrefix
 Global $Werte [0][4]
 
 ReadIN()
@@ -119,7 +118,7 @@ Func _ReadInSection($pSectionName)
 
 	next
 
-	 $ValuesCurrentFile = _ArrayExtract($ValuesCurrentFile, 0, $CurrentPos-1) ; Startet bei null und endet bei der letzten Zeile des Files
+	 $ValuesCurrentFile = _ArrayExtract($ValuesCurrentFile, 0, $CurrentPos-1)
 
 	;_ArrayDisplay($ValuesCurrentFile)
 	Return $ValuesCurrentFile
