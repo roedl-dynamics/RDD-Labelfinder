@@ -26,7 +26,7 @@ Both are free to download from the following links:
 1.  [AutoIt3](https://www.autoitscript.com/site/autoit/downloads/).
 2.  [SciTE](https://www.autoitscript.com/site/autoit-script-editor/downloads/).
 
-Once installed, open the RDD-Labelfinder.au3 file with SciTE to open and edit the code. By clicking <kbd>F5</kbd>, you can testrun the script.
+Once installed, open the RDD-Labelfinder.au3 file with SciTE to edit the code. By clicking <kbd>F5</kbd>, you can testrun the script.
 For further informations have a look at the official AutoIt [website](https://www.autoitscript.com/site/autoit-script-editor/installation/).
 <h1> item Source:  </h1>
 
