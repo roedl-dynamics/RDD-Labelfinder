@@ -1,4 +1,4 @@
-# RDD-Labelfinder
+Labelfinder
 the script enables a faster search of labels from specified label files.<br>
 
 ![image](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/Labelfinder.png)
