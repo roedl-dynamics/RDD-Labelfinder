@@ -75,34 +75,10 @@ Func ReadIn()
 		; mit String Split in ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
 		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
 		;_ArrayDisplay($Labels,"Labels am Ende der ReadIn Funktion ")
-
+		openGUI()
 
 	EndIf
 
-	;_ArrayDisplay($Werte)
-	; hier ReadtmpFile
-
-
-#cs
-	For $i = 1 to UBound($SectionNames)-1
-		Local $SectionName = $SectionNames[$i]
-		ConsoleWrite($SectionName&@CRLF)
-
-		if $SectionName == "System" then
-
-			$MaxSearchResults = IniRead($INIFile,$SectionName,"MaxSearchResults",0)
-
-		elseIf $SectionName == "General" Then
-			; hier passiert nichts
-
-		else
-			Local $SectionContent = _ReadInSection($SectionNames[$i])
-			_ArrayAdd($Werte,$SectionContent)
-		EndIf
-
-
-	next
-#ce
 	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
 	;_ArrayDisplay($Werte)
 	Main()
