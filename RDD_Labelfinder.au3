@@ -41,11 +41,14 @@ Global $Werte [0][4] ; bleibt umd die Daten aus dem INI File auszulesen
 ; zum Test
 Global $LabelDatei = @ScriptDir& "\Labels.txt" ; Zusätzliche Textdatei die die Werte Zwischenspeichert das das Tool im Launcher verwendbar ist
 Global $Labels[0][4] ; 2D Array welches die Labels aus der neuen Textdatei einließt und enthält
+Global $openByLauncher ;
 
 ReadIN()
 
 Func ReadIn()
 	Local $FileSize = FileGetSize($LabelDatei)
+	$openByLauncher = IniRead($INIFile,"Launcher","openedByLauncher","Konnte nicht gefunden werden")
+	ConsoleWrite("OpendedBylauncher: " & $openByLauncher & @CRLF)
 	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
 	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 	;_ArrayDisplay($SectionNames)
@@ -60,6 +63,8 @@ Func ReadIn()
 				Local $SectionContent = _ReadInSection($SectionNames[$i])
 				_ArrayAdd($Werte,$SectionContent)
 				_FileWriteFromArray($LabelDatei,$Werte) ; schreibt das Array in das neue Dokument Labels.txt
+			elseIf $SectionName == "Launcher" then
+				$openByLauncher  = IniRead($INIFile,"Launcher","openedByLauncher","")
 			EndIf
 		next
 		ConsoleWrite("Größe des Arrays(Labels): " & UBound($Labels)&","& UBound($Labels,2) & @CRLF)
@@ -75,7 +80,9 @@ Func ReadIn()
 		; mit String Split in ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
 		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
 		;_ArrayDisplay($Labels,"Labels am Ende der ReadIn Funktion ")
-		openGUI()
+		If $openByLauncher == "True" then
+			openGUI()
+		EndIf
 
 	EndIf
 
@@ -278,8 +285,12 @@ Func openGUI()
 		Local $nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE
-				GUIDelete($Form1)
-				Main()
+				if $openByLauncher == "True" then
+					Exit
+				else
+					GUIDelete($Form1)
+					Main()
+				EndIf
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
 				search()
