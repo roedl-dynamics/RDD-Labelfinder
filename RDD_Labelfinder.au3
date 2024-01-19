@@ -36,15 +36,54 @@ Global $MaxSearchResults
 Global $Imagepath = @ScriptDir &"\Search.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
-Global $Werte [0][4]
+Global $Werte [0][4] ; bleibt umd die Daten aus dem INI File auszulesen
+
+; zum Test
+Global $LabelDatei = @ScriptDir& "\Labels.txt" ; Zusätzliche Textdatei die die Werte Zwischenspeichert das das Tool im Launcher verwendbar ist
+Global $Labels[0][4] ; 2D Array welches die Labels aus der neuen Textdatei einließt und enthält
 
 ReadIN()
 
 Func ReadIn()
+	Local $FileSize = FileGetSize($LabelDatei)
 	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
 	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 	;_ArrayDisplay($SectionNames)
+	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
 
+	if $FileSize == 0 then
+		; hier muss das Tool die Labels in die neue Textdatei einlesen
+		ConsoleWrite("Die Labeldatei ist leer" & @CRLF)
+		For $i = 1 to Ubound($SectionNames)-1
+			Local $SectionName = $SectionNames[$i]
+			if $SectionName <> "System" and $SectionName <> "General" then
+				Local $SectionContent = _ReadInSection($SectionNames[$i])
+				_ArrayAdd($Werte,$SectionContent)
+				_FileWriteFromArray($LabelDatei,$Werte) ; schreibt das Array in das neue Dokument Labels.txt
+			EndIf
+		next
+		ConsoleWrite("Größe des Arrays(Labels): " & UBound($Labels)&","& UBound($Labels,2) & @CRLF)
+		ConsoleWrite("Größe des Arrays(Werte): " & UBound($Werte) & ","&Ubound($Werte,2)& @CRLF)
+
+		; mit der Funktion readLabelFile_Into_2DArray in das 2D-Array einlesen
+		$Labels = readLabelFile_Into_2DArray($LabelDatei)
+	else
+		; hier muss das Tool nur auf die bereits eingelesenen Werte in der neuen Textdatei zugreifen
+		ConsoleWrite("Die Labeldatei ist nicht leer"& @CRLF)
+		MsgBox(0,"","Die Labeldatei ist nicht leer")
+		;_FileReadToArray($LabelDatei,$Labels) würde unnötiger weise Doppelt dafür sorgen das die werte in einem Array sind
+		; mit String Split in ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
+		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
+		;_ArrayDisplay($Labels,"Labels am Ende der ReadIn Funktion ")
+
+
+	EndIf
+
+	;_ArrayDisplay($Werte)
+	; hier ReadtmpFile
+
+
+#cs
 	For $i = 1 to UBound($SectionNames)-1
 		Local $SectionName = $SectionNames[$i]
 		ConsoleWrite($SectionName&@CRLF)
@@ -63,7 +102,7 @@ Func ReadIn()
 
 
 	next
-
+#ce
 	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
 	;_ArrayDisplay($Werte)
 	Main()
@@ -89,6 +128,8 @@ Func _ReadInSection($pSectionName)
 
 	Local $n
 	Local $CurrentPos = 0
+
+	;_ArrayDisplay($FileContent_Rows)
 
 	For $n = 0 to $FileContent_Rows
 
@@ -125,13 +166,104 @@ Func _ReadInSection($pSectionName)
 
 EndFunc
 
+#cs
+Func readLabelFile_Into_2DArray($pFile) ;an der Methode _ReadInSection orientieren
+
+	; korrigieren es soll das Labelfile in das 2D Array Labels schreiben
+	Local $file =  FileOpen($pFile,$FO_READ)
+
+	Local $CurrentPos = 0
+	while 1
+		Local $Line = FileReadLine($file)
+		If @error then ExitLoop
+		Local $splitArray = StringSplit($Line, "|")
+		;_ArrayDisplay($splitArray)
+		;ConsoleWrite("Größe des Arrays: " & Ubound($splitArray)-1 & @CRLF)
+		;ConsoleWrite("Label: " & $splitArray[0] & " text: " & $splitArray[1] & " prefix: " & $splitArray[2] & @CRLF)
+
+		_ArrayDelete($splitArray, _ArrayFindAll($splitArray, " "))
+		_ArrayDelete($splitArray,0)
+		_ArrayDelete($splitArray,2)
+
+		;_ArrayDisplay($splitArray)
+
+		Local $label = $splitArray[0]
+		Local $text =  $splitArray[1]
+		Local $prefix = $splitArray[2]
+		Local $comment = ""
+
+
+		;ConsoleWrite( " Prefix: "& $prefix &@CRLF )
+		Local $Fill = $label &"|"& $text &"|"& $prefix
+		;ConsoleWrite("Zusammenhängender String: "&$Fill& @CRLF)
+
+		$CurrentPos += 1
+		_ArrayAdd($Labels,$Fill) ; hier das Labelarray verwenden
+
+	WEnd
+
+	; hier Array extract verwenden
+	; aber beim Arraynamen Labels bleiben
+	$Labels = _ArrayExtract($Labels,0,$CurrentPos-1)
+
+EndFunc
+#ce
+
+Func readLabelFile_Into_2DArray($pFile)
+	; Prüft ob das File Existiert
+	if Not FileExists($pFile) then
+		MsgBox(16,@ScriptName,"Datei " & $pFile & " wurde nicht gefunden")
+	EndIf
+
+	Local $FileContent = FileReadToArray($pFile)
+	;_ArrayDisplay($FileContent,"Filecontent:")
+
+	Local $FileContent_Rows = UBound($FileContent)-1
+	ConsoleWrite("$FileContent_Rows=" & $FileContent_Rows & @CRLF)
+	Local $ValuesCurrentFile[$FileContent_Rows][4]
+
+	Local $n
+	Local $CurrentPos = 0
+
+	For $n = 0 to $FileContent_Rows-1
+		Local $FileContentLine = $FileContent[$n]
+
+		If StringLeft($FileContentLine,1) <> " " Then
+			Local $tmpArray = StringSplit($FileContentLine,"|")
+			ConsoleWrite("CurrentPos "& $CurrentPos & @CRLF)
+			;_ArrayDisplay($tmpArray,"Das richtige Array")
+
+			Local $label = $tmpArray[1]
+			Local $text = $tmpArray[2]
+			Local $comment = ""
+			Local $prefix = $tmpArray[4]
+
+			;_ArrayDisplay($ValuesCurrentFile,"valuesCurrentFile")
+
+			$ValuesCurrentFile[$CurrentPos][0] = $label
+			$ValuesCurrentFile[$CurrentPos][1] = $text
+			$ValuesCurrentFile[$CurrentPos][2] = $comment
+			$ValuesCurrentFile[$CurrentPos][3] = $prefix
+
+			$CurrentPos += 1
+
+		EndIf
+
+	next
+
+
+		Return $ValuesCurrentFile
+EndFunc
+
+
 Func Main()
 
 	TraySetState($TRAY_ICONSTATE_SHOW)
 
     While 1
         Switch TrayGetMsg()
-            Case  $iExit
+			Case  $iExit
+				;clearFile()
 				Exit
 			Case $iSearch
 				openGUI()
@@ -206,7 +338,9 @@ func search()
 
 	; hier die Labels durchgehen
 	Local $col = 1
-	For $Row = 0 to UBound($Werte,1)-1
+
+
+	For $Row = 0 to UBound($Labels,1)-1
 		If $counter == $MaxSearchResults Then
 			 Local $returnValue = MsgBox($MB_YESNO, "Achtung", "Möchten sie mehr als "&$MaxSearchResults&"anzeigen lassen ?")
 			 if $returnValue == $IDYES or $returnValue == 6 Then
@@ -218,9 +352,11 @@ func search()
 			EndIf
 		EndIf
 
-		If StringRegExp($Werte[$Row][$col], $eingabe) then
+		ConsoleWrite("Größe des Arrays: "& Ubound($Labels) & " Row-Wert: "& $Row & " col-Wert: " & $col & @CRLF)
+
+		If StringRegExp($Labels[$Row][$col], $eingabe) then
 				$counter = $counter +1
-				GUICtrlCreateListViewItem($Werte[$Row][0]&"|"&$Werte[$Row][1]&"|"&"" , $hListView)
+				GUICtrlCreateListViewItem($Labels[$Row][0]&"|"&$Labels[$Row][1]&"|"&"" , $hListView)
 		EndIf
 
 	next
@@ -235,13 +371,21 @@ Func TakeOver()
 
 	Local $SelectedValue = _GUICtrlListView_GetItemText($hListView, $selectedIndex)
 
-	Local $index = _ArraySearch($Werte,$SelectedValue)
+	Local $index = _ArraySearch($Labels,$SelectedValue)
 
-	if $Werte[$index][3] <> "" then
+	if $Labels[$index][3] <> "" then
 
-		_ClipBoard_SetData($Werte[$index][3]&":"& $Werte[$index][0])
+		_ClipBoard_SetData($Labels[$index][3]&":"& $Labels[$index][0])
 
 	Else
-		_ClipBoard_SetData($Werte[$index][0])
+		_ClipBoard_SetData($Labels[$index][0])
 	EndIf
+EndFunc
+
+Func clearFile()
+	Local $oFile  = FileOpen($LabelDatei,2)
+	FileWrite($oFile,"")
+	FileClose($oFile)
+
+
 EndFunc
