@@ -296,8 +296,12 @@ Func openGUI()
 				search()
 			Case $TakeOverButton
 				TakeOver()
-				GUIDelete($Form1)
-				Main()
+				if $openByLauncher == "True" then
+					Exit
+				else
+					GUIDelete($Form1)
+					Main()
+				EndIf
 			Case $GUI_EVENT_RESIZED
 				Local $NewSize = WinGetPos($Form1)
 				if $NewSize[2] < $minWidth OR $NewSize[3] < $minHeigt Then
