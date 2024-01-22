@@ -1,11 +1,13 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=..\..\..\Downloads\Double-J-Design-Ravenna-3d-Search-File.ico
+#AutoIt3Wrapper_Icon=Labelfinder.ico
 #AutoIt3Wrapper_Res_Comment=D365 Tool für eine schnelle Labelsuche
 #AutoIt3Wrapper_Res_Description=RD Labelfinder
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.1
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.4
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
 #AutoIt3Wrapper_Res_ProductName=RD Labelfinder
 #AutoIt3Wrapper_Res_CompanyName=Rödl Dynamics GmbH
+#AutoIt3Wrapper_Res_LegalCopyright=Rödl Dynamics
+#AutoIt3Wrapper_Res_LegalTradeMarks=RödlDynamics
 #AutoIt3Wrapper_Res_Language=1031
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
@@ -114,7 +116,7 @@ Func _ReadInSection($pSectionName)
 
 	;_ArrayDisplay($FileContent_Rows)
 
-	For $n = 0 to $FileContent_Rows
+	For $n = 0 to $FileContent_Rows-1
 
 		Local $FileContentLine = $FileContent[$n]
 
@@ -149,48 +151,6 @@ Func _ReadInSection($pSectionName)
 
 EndFunc
 
-#cs
-Func readLabelFile_Into_2DArray($pFile) ;an der Methode _ReadInSection orientieren
-
-	; korrigieren es soll das Labelfile in das 2D Array Labels schreiben
-	Local $file =  FileOpen($pFile,$FO_READ)
-
-	Local $CurrentPos = 0
-	while 1
-		Local $Line = FileReadLine($file)
-		If @error then ExitLoop
-		Local $splitArray = StringSplit($Line, "|")
-		;_ArrayDisplay($splitArray)
-		;ConsoleWrite("Größe des Arrays: " & Ubound($splitArray)-1 & @CRLF)
-		;ConsoleWrite("Label: " & $splitArray[0] & " text: " & $splitArray[1] & " prefix: " & $splitArray[2] & @CRLF)
-
-		_ArrayDelete($splitArray, _ArrayFindAll($splitArray, " "))
-		_ArrayDelete($splitArray,0)
-		_ArrayDelete($splitArray,2)
-
-		;_ArrayDisplay($splitArray)
-
-		Local $label = $splitArray[0]
-		Local $text =  $splitArray[1]
-		Local $prefix = $splitArray[2]
-		Local $comment = ""
-
-
-		;ConsoleWrite( " Prefix: "& $prefix &@CRLF )
-		Local $Fill = $label &"|"& $text &"|"& $prefix
-		;ConsoleWrite("Zusammenhängender String: "&$Fill& @CRLF)
-
-		$CurrentPos += 1
-		_ArrayAdd($Labels,$Fill) ; hier das Labelarray verwenden
-
-	WEnd
-
-	; hier Array extract verwenden
-	; aber beim Arraynamen Labels bleiben
-	$Labels = _ArrayExtract($Labels,0,$CurrentPos-1)
-
-EndFunc
-#ce
 
 Func readLabelFile_Into_2DArray($pFile)
 	; Prüft ob das File Existiert
@@ -246,7 +206,7 @@ Func Main()
     While 1
         Switch TrayGetMsg()
 			Case  $iExit
-				;clearFile()
+				clearFile()
 				Exit
 			Case $iSearch
 				openGUI()
