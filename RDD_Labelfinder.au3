@@ -59,7 +59,7 @@ Func ReadIn()
 		ConsoleWrite("Die Labeldatei ist leer" & @CRLF)
 		For $i = 1 to Ubound($SectionNames)-1
 			Local $SectionName = $SectionNames[$i]
-			if $SectionName <> "System" and $SectionName <> "General" then
+			if $SectionName <> "System" and $SectionName <> "General" and $SectionName <> "Launcher" then
 				Local $SectionContent = _ReadInSection($SectionNames[$i])
 				_ArrayAdd($Werte,$SectionContent)
 				_FileWriteFromArray($LabelDatei,$Werte) ; schreibt das Array in das neue Dokument Labels.txt
@@ -70,12 +70,12 @@ Func ReadIn()
 		ConsoleWrite("Größe des Arrays(Labels): " & UBound($Labels)&","& UBound($Labels,2) & @CRLF)
 		ConsoleWrite("Größe des Arrays(Werte): " & UBound($Werte) & ","&Ubound($Werte,2)& @CRLF)
 
-		; mit der Funktion readLabelFile_Into_2DArray in das 2D-Array einlesen
+		; mit der Funktion readLabelFile_Intog_2DArray in das 2D-Array einlesen
 		$Labels = readLabelFile_Into_2DArray($LabelDatei)
 	else
 		; hier muss das Tool nur auf die bereits eingelesenen Werte in der neuen Textdatei zugreifen
 		ConsoleWrite("Die Labeldatei ist nicht leer"& @CRLF)
-		MsgBox(0,"","Die Labeldatei ist nicht leer")
+		;MsgBox(0,"","Die Labeldatei ist nicht leer")
 		;_FileReadToArray($LabelDatei,$Labels) würde unnötiger weise Doppelt dafür sorgen das die werte in einem Array sind
 		; mit String Split in ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
 		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
