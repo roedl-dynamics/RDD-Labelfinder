@@ -43,7 +43,8 @@ Global $Werte [0][4] ; bleibt umd die Daten aus dem INI File auszulesen
 ; zum Test
 Global $LabelDatei = @ScriptDir& "\Labels.txt" ; Zusätzliche Textdatei die die Werte Zwischenspeichert das das Tool im Launcher verwendbar ist
 Global $Labels[0][4] ; 2D Array welches die Labels aus der neuen Textdatei einließt und enthält
-Global $openByLauncher ;
+Global $openByLauncher ; ermöglicht eine Abfrage wo das Tool gestartet wurde
+Global $Labelfail = false
 
 ReadIN()
 
@@ -56,8 +57,20 @@ Func ReadIn()
 	;_ArrayDisplay($SectionNames)
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
 
+	Local $z
+	For $z = 4 to UBound($SectionNames)-1
+		ConsoleWrite("Springt in die Schleife nach dem $z")
+		Local $path = IniRead($INIFile,$SectionNames[$z],"Labelfile","")
+		if $path == "" then
+			MsgBox(16, @ScriptName,"bitte Dateipfad für " &$SectionNames[$z]&" angeben")
+			$Labelfail = True
+			Main()
+		EndIf
+	next
+
 	if UBound($SectionNames)-1 < 4 then
 		MsgBox(16,"Warnung","sie haben keine Labeldateien angegeben")
+		$Labelfail = true
 		Main()
 	EndIf
 
@@ -103,13 +116,14 @@ Func _ReadInSection($pSectionName)
 	Local $tmpFilePath = IniRead($INIFile,$pSectionName, "Labelfile","")
 	Local $LabelPrefix = IniRead($INIFile,$pSectionName,"Labelprefix","")
 
+#cs
 	if $tmpFilePath == "" then
 		MsgBox(16, @ScriptName,"bitte Dateipfad für " &$pSectionName&" angeben")
 	EndIf
+#ce
 
 	if Not FileExists($tmpFilePath) Then
 		MsgBox(16,@ScriptName, "Datei " & $tmpFilePath & " wurde nicht gefunden")
-		Main()
 	endif
 
 	Local $FileContent = FileReadToArray($tmpFilePath)
@@ -219,7 +233,12 @@ Func Main()
 				clearFile()
 				Exit
 			Case $iSearch
-				openGUI()
+					if $Labelfail == true then
+						MsgBox(16,"Error","die Labeldateien konnten nicht korrekt eingelesen werden")
+						Exit
+					Else
+						openGUI()
+					EndIf
         EndSwitch
     WEnd
 EndFunc
@@ -347,6 +366,4 @@ Func clearFile()
 	Local $oFile  = FileOpen($LabelDatei,2)
 	FileWrite($oFile,"")
 	FileClose($oFile)
-
-
 EndFunc
