@@ -97,7 +97,7 @@ Func ReadIn()
 		ConsoleWrite("Die Labeldatei ist nicht leer"& @CRLF)
 		;MsgBox(0,"","Die Labeldatei ist nicht leer")
 		;_FileReadToArray($LabelDatei,$Labels) würde unnötiger weise Doppelt dafür sorgen das die werte in einem Array sind
-		; mit String Split in ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
+		; mit String Split n ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
 		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
 		;_ArrayDisplay($Labels,"Labels am Ende der ReadIn Funktion ")
 		If $openByLauncher == "True" then
@@ -252,6 +252,9 @@ Func openGUI()
 		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 24, 318, 65)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
+		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,5,60,20)
+		GUICtrlSetResizing($openIniFileButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+
 		Global $SearchButton = GUICtrlCreateButton("", 270, 45, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
@@ -298,6 +301,9 @@ Func openGUI()
 					WinMove($Form1,"",$NewSize[0],$NewSize[1],$minWidth,$minHeigt)
 
 				EndIf
+			Case $openIniFileButton
+				Local $filePath = @ScriptDir &"\" & $INIFile
+				Run("notepad.exe " & $filePath)
 		EndSwitch
 	WEnd
 EndFunc
