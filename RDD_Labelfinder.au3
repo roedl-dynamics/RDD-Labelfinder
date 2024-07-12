@@ -319,8 +319,12 @@ Func openGUI()
 		Global $FileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $SafeButton = GUICtrlCreateButton("Speichern",128,205,100,25)
+		Global $SafeButton = GUICtrlCreateButton("Speichern",80,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+
+		Global $DeleteButton = GUICtrlCreateButton("Löschen",180,205,100,25)
+		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+
 		GUICtrlCreateTabItem("")
 
 		Global $TabCreate = GUICtrlCreateTabItem("Create")
@@ -392,6 +396,9 @@ Func openGUI()
 				createINISection()
 			Case $SafeButton
 				editINI()
+			Case $DeleteButton
+				local $Section = GUICtrlRead($SectionNameInput)
+				IniDelete($INIFile,$Section)
 		EndSwitch
 	WEnd
 EndFunc
