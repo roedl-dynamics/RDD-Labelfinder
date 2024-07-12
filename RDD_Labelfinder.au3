@@ -377,6 +377,7 @@ Func openGUI()
 				;Local $filePath = @ScriptDir &"\" & $INIFile
 				Local $filePath = $INIFile
 				Run("notepad.exe " & $filePath)
+
 			Case $FileOpenButton
 				local $file =  FileOpenDialog("Wählen sie eine Labeldatei aus", @DesktopDir & "\", "All (*.*)", $FD_FILEMUSTEXIST)
 				GUICtrlSetData($InputLabelFile,$file)
@@ -384,16 +385,21 @@ Func openGUI()
 			Case $CreateTabFileOpenButton
 				local $file =  FileOpenDialog("Wählen sie eine Labeldatei aus", @DesktopDir & "\", "All (*.*)", $FD_FILEMUSTEXIST)
 				GUICtrlSetData($CreateTabLabelFileInput,$file)
+
 			Case $CreateButton
 				createINISection()
 				_GUICtrlComboBox_BeginUpdate($SectionNameInput)
 				_GUICtrlComboBox_AddString($SectionNameInput, GUICtrlRead($CreateTabSectionNameInput))
 				_GUICtrlComboBox_EndUpdate($SectionNameInput)
+
 			Case $SafeButton
 				editINI()
+
 			Case $DeleteButton
 				local $Section = GUICtrlRead($SectionNameInput)
 				IniDelete($INIFile,$Section)
+				local $selectedComboboxIndex =  _GUICtrlComboBox_GetCurSel($SectionNameInput)
+				_GUICtrlComboBox_DeleteString($SectionNameInput,$selectedComboboxIndex)
 
 		EndSwitch
 	WEnd
