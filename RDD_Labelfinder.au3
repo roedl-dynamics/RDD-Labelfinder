@@ -29,6 +29,7 @@ Opt ("MustDeclareVars",1)
 #include <File.au3>
 #include <Clipboard.au3>
 #include <GuiListView.au3>
+#include <GuiComboBoxEx.au3>
 
 ;Opt("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
@@ -45,25 +46,10 @@ Global $LabelDatei = @ScriptDir& "\Labels.txt" ; Zusätzliche Textdatei die die 
 Global $Labels[0][4] ; 2D Array welches die Labels aus der neuen Textdatei einließt und enthält
 Global $openByLauncher ; ermöglicht eine Abfrage wo das Tool gestartet wurde
 Global $Labelfail = false
+Global $SectionNameInput ;combobox
+Global $sections ; Array für die Combobox
 
-;Array für die Combobox initialisieren
-Global $sections = IniReadSectionNames($INIFile)
-
-;_ArrayDisplay($sections)
-_ArrayDelete($sections,0)
-
-Global $indicesToDelete = []
-For $i = 0 To UBound($sections) - 1
-	If $sections[$i] == "Sys" Or $sections[$i] == "SYP" Or $sections[$i] == "General" Or $sections[$i] == "Launcher" Or $sections[$i] == "General" Or $sections[$i] == "System" Then
-		_ArrayAdd($indicesToDelete, $i)
-	EndIf
-Next
-
-; Indizes von hinten nach vorne löschen
-For $i = UBound($indicesToDelete) - 1 To 0 Step -1
-	_ArrayDelete($sections, $indicesToDelete[$i])
-next
-
+_readCustomSections()
 ReadIN()
 
 Func ReadIn()
@@ -302,7 +288,7 @@ Func openGUI()
 		Global $SectionNameLabel = GUICtrlCreateLabel("Sectionname: ",16,66,100,17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
-		Global $SectionNameInput = GUICtrlCreateCombo("", 128, 66, 153, 21)
+		$SectionNameInput = GUICtrlCreateCombo("", 128, 66, 153, 21)
 		GUICtrlSetData($SectionNameInput, _ArrayToString($sections, "|"))
 
 		Global $LabelLabelFile = GUICtrlCreateLabel("Labeldatei: ", 16, 99, 100, 17)
@@ -320,10 +306,13 @@ Func openGUI()
 		Global $FileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $SafeButton = GUICtrlCreateButton("Speichern",80,205,100,25)
+		Global $SafeButton = GUICtrlCreateButton("Speichern",16,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $DeleteButton = GUICtrlCreateButton("Löschen",180,205,100,25)
+		Global $RefreshButton = GUICtrlCreateButton("", 140, 205, 30, 25, $BS_ICON)
+		GUICtrlSetImage($RefreshButton, @ScriptDir & "\Refresh.ico")
+
+		Global $DeleteButton = GUICtrlCreateButton("Löschen",210,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
 		GUICtrlCreateTabItem("")
@@ -400,11 +389,19 @@ Func openGUI()
 				GUICtrlSetData($CreateTabLabelFileInput,$file)
 			Case $CreateButton
 				createINISection()
+				_GUICtrlComboBox_BeginUpdate($SectionNameInput)
+				_GUICtrlComboBox_AddString($SectionNameInput, GUICtrlRead($CreateTabSectionNameInput))
+				_GUICtrlComboBox_EndUpdate($SectionNameInput)
 			Case $SafeButton
 				editINI()
 			Case $DeleteButton
 				local $Section = GUICtrlRead($SectionNameInput)
 				IniDelete($INIFile,$Section)
+			Case $RefreshButton
+				MsgBox(0,"","Wurde gedrückt")
+				;_cleanComboBoxArray()
+				;_readCustomSections()
+				;GUICtrlSetData($SectionNameInput, _ArrayToString($sections, "|"))
 		EndSwitch
 	WEnd
 EndFunc
@@ -513,3 +510,37 @@ Func editINI()
         MsgBox(16, "Fehler", "Die INI-Datei existiert nicht: " & $INIFile)
     EndIf
 EndFunc
+
+;liest die Custom Sections aus um sie in der Combobox anzuzeigen
+Func _readCustomSections()
+	;Array für die Combobox initialisieren
+	$sections = IniReadSectionNames($INIFile)
+
+	;_ArrayDisplay($sections)
+	_ArrayDelete($sections,0)
+
+	Global $indicesToDelete = []
+	For $i = 0 To UBound($sections) - 1
+		If $sections[$i] == "Sys" Or $sections[$i] == "SYP" Or $sections[$i] == "General" Or $sections[$i] == "Launcher" Or $sections[$i] == "General" Or $sections[$i] == "System" Then
+			_ArrayAdd($indicesToDelete, $i)
+		EndIf
+	Next
+
+	; Indizes von hinten nach vorne löschen
+	For $i = UBound($indicesToDelete) - 1 To 0 Step -1
+		_ArrayDelete($sections, $indicesToDelete[$i])
+	next
+
+	;_ArrayDisplay($sections)
+
+EndFunc
+
+Func _cleanComboBoxArray()
+
+	for $i = UBound($sections)-1  To 0 Step -1
+		_ArrayDelete($sections,$i)
+		ConsoleWrite($i)
+	next
+
+EndFunc
+
