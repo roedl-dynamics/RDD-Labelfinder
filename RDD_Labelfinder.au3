@@ -324,6 +324,23 @@ Func openGUI()
 		GUICtrlCreateTabItem("")
 
 		Global $TabCreate = GUICtrlCreateTabItem("Create")
+
+		Global $CreateTabSectionNameLabel = GUICtrlCreateLabel("Sectionname: ",16,66,100,17)
+
+		Global $CreateTabSectionNameInput = GUICtrlCreateInput("", 128, 66, 153, 21)
+
+		Global $CreateTabLabelFileLabel = GUICtrlCreateLabel("Labeldatei: ", 16, 99, 100, 17)
+
+		Global $CreateTabLabelFileInput = GUICtrlCreateInput("", 128, 99, 153, 21)
+
+		Global $CreateTabFileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
+
+		Global $CreateTabPrefixLabel =  GUICtrlCreateLabel("Prefix: ", 16, 132, 100, 17)
+
+		Global $CreateTabPrefixInput =  GUICtrlCreateInput("", 128, 132, 153, 21)
+
+		Global $CreateButton = GUICtrlCreateButton("Create",128,205,100,25)
+
 		GUICtrlCreateTabItem("")
 
 		GUISetState(@SW_SHOW)
@@ -367,6 +384,12 @@ Func openGUI()
 			Case $FileOpenButton
 				local $file =  FileOpenDialog("Wählen sie eine Labeldatei aus", @DesktopDir & "\", "All (*.*)", $FD_FILEMUSTEXIST)
 				GUICtrlSetData($InputLabelFile,$file)
+
+			Case $CreateTabFileOpenButton
+				local $file =  FileOpenDialog("Wählen sie eine Labeldatei aus", @DesktopDir & "\", "All (*.*)", $FD_FILEMUSTEXIST)
+				GUICtrlSetData($CreateTabLabelFileInput,$file)
+			Case $CreateButton
+				createINISection()
 			Case $SafeButton
 				editINI()
 		EndSwitch
@@ -437,6 +460,21 @@ Func clearFile()
 	Local $oFile  = FileOpen($LabelDatei,2)
 	FileWrite($oFile,"")
 	FileClose($oFile)
+EndFunc
+
+Func createINISection()
+	local $SectionNameValue = GUICtrlRead($CreateTabSectionNameInput)
+	local $LabelFileValue = GUICtrlRead($CreateTabLabelFileInput)
+	local $PrefixValue = GUICtrlRead($CreateTabPrefixInput)
+
+	;local $Keys = "Labelfile= " & @CRLF & _
+     ;            "Labelprefix ="
+
+	local $Keys = "Labelfile=" & @CRLF &  "Labelprefix="
+	IniWriteSection($INIFile,$SectionNameValue,$Keys,1)
+	IniWrite($INIFile,$SectionNameValue,"Labelfile",$LabelFileValue)
+	IniWrite($INIFile,$SectionNameValue,"Labelprefix",$PrefixValue)
+
 EndFunc
 
 Func editINI()
