@@ -306,10 +306,10 @@ Func openGUI()
 		Global $FileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $SafeButton = GUICtrlCreateButton("Speichern",16,205,100,25)
+		Global $SafeButton = GUICtrlCreateButton("Speichern",80,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $DeleteButton = GUICtrlCreateButton("Löschen",210,205,100,25)
+		Global $DeleteButton = GUICtrlCreateButton("Löschen",180,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
 		GUICtrlCreateTabItem("")
