@@ -46,8 +46,6 @@ Global $Labels[0][4] ; 2D Array welches die Labels aus der neuen Textdatei einli
 Global $openByLauncher ; ermöglicht eine Abfrage wo das Tool gestartet wurde
 Global $Labelfail = false
 
-Global $ComboTest  = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]
-
 ;Array für die Combobox initialisieren
 Global $sections = IniReadSectionNames($INIFile)
 
@@ -297,30 +295,35 @@ Func openGUI()
 		Global $TabEdit = GUICtrlCreateTabItem("Edit")
 		Global $InputMaxResults = GUICtrlCreateInput("", 128, 33, 153, 21)
 		;GUICtrlSetResizing($InputMaxResults,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+
 		Global $LabelMaxResults = GUICtrlCreateLabel("MaxSearchResults: ", 16, 33, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
+
 		Global $SectionNameLabel = GUICtrlCreateLabel("Sectionname: ",16,66,100,17)
-		;Global $SectionNameInput = GUICtrlCreateInput("",128,66,153,21)
+
 		Global $SectionNameInput = GUICtrlCreateCombo("", 128, 66, 153, 21)
 		GUICtrlSetData($SectionNameInput, _ArrayToString($sections, "|"))
+
 		Global $LabelLabelFile = GUICtrlCreateLabel("Labeldatei: ", 16, 99, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
+
 		Global $InputLabelFile = GUICtrlCreateInput("", 128, 99, 153, 21)
 		;GUICtrlSetResizing($InputLabelFile,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
-		Global $PrefixLabel = GUICtrlCreateLabel("Prefix: ", 16, 162, 100, 17)
+
+		Global $PrefixLabel = GUICtrlCreateLabel("Prefix: ", 16, 132, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
-		Global $InputPrefix = GUICtrlCreateInput("", 128, 152, 151, 21)
+
+		Global $InputPrefix = GUICtrlCreateInput("", 128, 132, 153, 21)
 		;GUICtrlSetResizing($InputPrefix,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+
 		Global $FileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
-		;Global $Label4 = GUICtrlCreateLabel("Label4", 16, 152, 92, 17)
-		;Global $Input4 = GUICtrlCreateInput("", 128, 152, 153, 21)
-		;GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
-		;Global $Label5 = GUICtrlCreateLabel("Label5", 16, 192, 100, 17)
-		;Global $Input5 = GUICtrlCreateInput("", 128, 192, 153, 21)
-		;GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
-		Global $SafeButton = GUICtrlCreateButton("Speichern",128,300,100,25)
+
+		Global $SafeButton = GUICtrlCreateButton("Speichern",128,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+		GUICtrlCreateTabItem("")
+
+		Global $TabCreate = GUICtrlCreateTabItem("Create")
 		GUICtrlCreateTabItem("")
 
 		GUISetState(@SW_SHOW)
@@ -441,8 +444,6 @@ Func editINI()
 	local $InputLabelFileValue = GUICtrlRead($InputLabelFile)
 	local $SectionNameInputValue = GUICtrlRead($SectionNameInput)
 	local $PrefixLabelValue = GUICtrlRead($InputPrefix)
-
-	;_ArrayDisplay($sections)
 
 	If FileExists($INIFile) Then
 		if $MaxSearchInputValue <> "" Then
