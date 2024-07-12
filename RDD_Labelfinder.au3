@@ -309,9 +309,6 @@ Func openGUI()
 		Global $SafeButton = GUICtrlCreateButton("Speichern",16,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $RefreshButton = GUICtrlCreateButton("", 140, 205, 30, 25, $BS_ICON)
-		GUICtrlSetImage($RefreshButton, @ScriptDir & "\Refresh.ico")
-
 		Global $DeleteButton = GUICtrlCreateButton("Löschen",210,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
@@ -397,11 +394,7 @@ Func openGUI()
 			Case $DeleteButton
 				local $Section = GUICtrlRead($SectionNameInput)
 				IniDelete($INIFile,$Section)
-			Case $RefreshButton
-				MsgBox(0,"","Wurde gedrückt")
-				;_cleanComboBoxArray()
-				;_readCustomSections()
-				;GUICtrlSetData($SectionNameInput, _ArrayToString($sections, "|"))
+
 		EndSwitch
 	WEnd
 EndFunc
@@ -534,13 +527,3 @@ Func _readCustomSections()
 	;_ArrayDisplay($sections)
 
 EndFunc
-
-Func _cleanComboBoxArray()
-
-	for $i = UBound($sections)-1  To 0 Step -1
-		_ArrayDelete($sections,$i)
-		ConsoleWrite($i)
-	next
-
-EndFunc
-
