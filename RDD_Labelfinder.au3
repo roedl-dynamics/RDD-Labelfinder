@@ -32,7 +32,7 @@ Opt ("MustDeclareVars",1)
 
 ;Opt("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
-Global $INIFile = "AutoLabelSearch.au3.ini"
+Global $INIFile = @ScriptDir & "\AutoLabelSearch.au3.ini"
 Global $MaxSearchResults
 ;Global $SearchResults[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
@@ -46,6 +46,26 @@ Global $Labels[0][4] ; 2D Array welches die Labels aus der neuen Textdatei einli
 Global $openByLauncher ; ermöglicht eine Abfrage wo das Tool gestartet wurde
 Global $Labelfail = false
 
+Global $ComboTest  = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]
+
+;Array für die Combobox initialisieren
+Global $sections = IniReadSectionNames($INIFile)
+
+;_ArrayDisplay($sections)
+_ArrayDelete($sections,0)
+
+Global $indicesToDelete = []
+For $i = 0 To UBound($sections) - 1
+	If $sections[$i] == "Sys" Or $sections[$i] == "SYP" Or $sections[$i] == "General" Or $sections[$i] == "Launcher" Or $sections[$i] == "General" Or $sections[$i] == "System" Then
+		_ArrayAdd($indicesToDelete, $i)
+	EndIf
+Next
+
+; Indizes von hinten nach vorne löschen
+For $i = UBound($indicesToDelete) - 1 To 0 Step -1
+	_ArrayDelete($sections, $indicesToDelete[$i])
+next
+
 ReadIN()
 
 Func ReadIn()
@@ -53,8 +73,8 @@ Func ReadIn()
 	$openByLauncher = IniRead($INIFile,"Launcher","openedByLauncher","Konnte nicht gefunden werden")
 	ConsoleWrite("OpendedBylauncher: " & $openByLauncher & @CRLF)
 	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
-	Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
-	;_ArrayDisplay($SectionNames)
+	;Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
+	Global $SectionNames = IniReadSectionNames($INIFile)
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
 
 	Local $z
@@ -245,32 +265,68 @@ EndFunc
 
 Func openGUI()
 	#Region ### START Koda GUI section ### Form=
-		Local $minWidth = 350
-		Local $minHeigt = 460
-		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",350, 460, 190, 151,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
+		Local $minWidth = 350 ; an die neue Größe anpassen
+		Local $minHeigt = 460 ; an die neue Größe anpassen
+
+		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",350, 480, 190, 201,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
 		GUICtrlSetResizing($Form1,$GUI_DOCKAUTO)
-		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 24, 318, 65)
+
+		Local $Tab = GUICtrlCreateTab(0, 0, 350, 20)
+
+		Global $TabSearch = GUICtrlCreateTabItem("Suche")
+		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 44, 318, 65)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
-		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,5,60,20)
+		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,25,60,20)
 		GUICtrlSetResizing($openIniFileButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $SearchButton = GUICtrlCreateButton("", 270, 45, 60, 20,$BS_ICON)
+		Global $SearchButton = GUICtrlCreateButton("", 270, 65, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
 
-		Global $InputField = GUICtrlCreateInput("", 26, 45, 230, 20)
+		Global $InputField = GUICtrlCreateInput("", 26, 65, 230, 20)
 		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 100, 318, 295)
+		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 120, 318, 295)
 		GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKBOTTOM)
 
-		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 16, 400, 318, 27)
+		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 16, 420, 318, 27)
 		GUICtrlSetResizing(-1 ,$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKBOTTOM+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT)
+		GUICtrlCreateTabItem("")
+
+		Global $TabEdit = GUICtrlCreateTabItem("Edit")
+		Global $InputMaxResults = GUICtrlCreateInput("", 128, 33, 153, 21)
+		;GUICtrlSetResizing($InputMaxResults,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		Global $LabelMaxResults = GUICtrlCreateLabel("MaxSearchResults: ", 16, 33, 100, 17)
+		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
+		Global $SectionNameLabel = GUICtrlCreateLabel("Sectionname: ",16,66,100,17)
+		;Global $SectionNameInput = GUICtrlCreateInput("",128,66,153,21)
+		Global $SectionNameInput = GUICtrlCreateCombo("", 128, 66, 153, 21)
+		GUICtrlSetData($SectionNameInput, _ArrayToString($sections, "|"))
+		Global $LabelLabelFile = GUICtrlCreateLabel("Labeldatei: ", 16, 99, 100, 17)
+		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
+		Global $InputLabelFile = GUICtrlCreateInput("", 128, 99, 153, 21)
+		;GUICtrlSetResizing($InputLabelFile,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		Global $PrefixLabel = GUICtrlCreateLabel("Prefix: ", 16, 162, 100, 17)
+		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
+		Global $InputPrefix = GUICtrlCreateInput("", 128, 152, 151, 21)
+		;GUICtrlSetResizing($InputPrefix,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		Global $FileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
+		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+		;Global $Label4 = GUICtrlCreateLabel("Label4", 16, 152, 92, 17)
+		;Global $Input4 = GUICtrlCreateInput("", 128, 152, 153, 21)
+		;GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		;Global $Label5 = GUICtrlCreateLabel("Label5", 16, 192, 100, 17)
+		;Global $Input5 = GUICtrlCreateInput("", 128, 192, 153, 21)
+		;GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		Global $SafeButton = GUICtrlCreateButton("Speichern",128,300,100,25)
+		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+		GUICtrlCreateTabItem("")
 
 		GUISetState(@SW_SHOW)
 
 		ControlFocus($Form1, "", $InputField)
+
 	#EndRegion ### END Koda GUI section ##
 
 	While 1
@@ -302,8 +358,14 @@ Func openGUI()
 
 				EndIf
 			Case $openIniFileButton
-				Local $filePath = @ScriptDir &"\" & $INIFile
+				;Local $filePath = @ScriptDir &"\" & $INIFile
+				Local $filePath = $INIFile
 				Run("notepad.exe " & $filePath)
+			Case $FileOpenButton
+				local $file =  FileOpenDialog("Wählen sie eine Labeldatei aus", @DesktopDir & "\", "All (*.*)", $FD_FILEMUSTEXIST)
+				GUICtrlSetData($InputLabelFile,$file)
+			Case $SafeButton
+				editINI()
 		EndSwitch
 	WEnd
 EndFunc
@@ -372,4 +434,30 @@ Func clearFile()
 	Local $oFile  = FileOpen($LabelDatei,2)
 	FileWrite($oFile,"")
 	FileClose($oFile)
+EndFunc
+
+Func editINI()
+	local $MaxSearchInputValue = GUICtrlRead($InputMaxResults)
+	local $InputLabelFileValue = GUICtrlRead($InputLabelFile)
+	local $SectionNameInputValue = GUICtrlRead($SectionNameInput)
+	local $PrefixLabelValue = GUICtrlRead($InputPrefix)
+
+	;_ArrayDisplay($sections)
+
+	If FileExists($INIFile) Then
+		if $MaxSearchInputValue <> "" Then
+        IniWrite($INIFile, "System", "MaxSearchResults", $MaxSearchInputValue)
+		EndIf
+		if $SectionNameInputValue <> "" then
+			IniWrite($INIFile,$SectionNameInputValue,"","")
+		EndIf
+		if $InputLabelFileValue <> "" then
+        IniWrite($INIFile,$SectionNameInputValue, "Labelfile", $InputLabelFileValue)
+		EndIf
+		if $PrefixLabelValue <> "" then
+        IniWrite($INIFile,$SectionNameInputValue, "Labelprefix", $PrefixLabelValue)
+		EndIf
+    Else
+        MsgBox(16, "Fehler", "Die INI-Datei existiert nicht: " & $INIFile)
+    EndIf
 EndFunc
