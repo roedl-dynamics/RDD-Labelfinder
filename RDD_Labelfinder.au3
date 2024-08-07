@@ -37,6 +37,7 @@ Global $INIFile = @ScriptDir & "\AutoLabelSearch.au3.ini"
 Global $MaxSearchResults
 ;Global $SearchResults[0]
 Global $Imagepath = @ScriptDir &"\Search.ico"
+GLobal $RefreshImagePath = @ScriptDir & "\Refresh.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
 Global $Werte [0][4] ; bleibt umd die Daten aus dem INI File auszulesen
@@ -50,7 +51,7 @@ Global $SectionNameInput ;combobox
 Global $sections ; Array für die Combobox
 
 _readCustomSections()
-ReadIN()
+ReadIn()
 
 Func ReadIn()
 	Local $FileSize = FileGetSize($LabelDatei)
@@ -264,6 +265,10 @@ Func openGUI()
 		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,25,60,20)
 		GUICtrlSetResizing($openIniFileButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
+		Global $RefreshButton = GUICtrlCreateButton("",210,25,60,20,$BS_ICON)
+		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+		GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
+
 		Global $SearchButton = GUICtrlCreateButton("", 270, 65, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
@@ -358,6 +363,9 @@ Func openGUI()
 			Case $SearchButton
 				GUICtrlSetData($hListView, "")
 				search()
+			Case $RefreshButton
+				;clearFile()
+				;ReadIn()
 			Case $TakeOverButton
 				TakeOver()
 				if $openByLauncher == "True" then
