@@ -30,6 +30,7 @@ Opt ("MustDeclareVars",1)
 #include <Clipboard.au3>
 #include <GuiListView.au3>
 #include <GuiComboBoxEx.au3>
+#include <ProgressConstants.au3>
 
 ;Opt("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
@@ -268,6 +269,10 @@ Func openGUI()
 		Global $RefreshButton = GUICtrlCreateButton("",210,25,60,20,$BS_ICON)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
+
+		;Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20, $PBS_SMOOTH)
+		Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20,  $PBS_MARQUEE)
+		GUICtrlSetResizing($idProgressbar,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $SearchButton = GUICtrlCreateButton("", 270, 65, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
@@ -554,6 +559,8 @@ Func Refresh()
 
 	Local $z
 	For $z = 4 to UBound($SectionNames)-1
+		GUICtrlSendMsg($idProgressbar, $PBM_SETMARQUEE, True, 50)
+		;GUICtrlSetData($idProgressbar, $z)
 		ConsoleWrite("Springt in die Schleife nach dem $z")
 		Local $path = IniRead($INIFile,$SectionNames[$z],"Labelfile","")
 		if $path == "" then
@@ -602,5 +609,6 @@ Func Refresh()
 	EndIf
 
 	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
+	GUICtrlSendMsg($idProgressbar,$PBM_SETMARQUEE,false,50)
 	;_ArrayDisplay($Werte)
 EndFunc
