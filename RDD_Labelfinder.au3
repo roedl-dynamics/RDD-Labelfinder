@@ -404,6 +404,9 @@ Func openGUI()
 				_GUICtrlComboBox_AddString($SectionNameInput, GUICtrlRead($CreateTabSectionNameInput))
 				_GUICtrlComboBox_EndUpdate($SectionNameInput)
 				MsgBox(0,"","Wurde erstellt ")
+				GUICtrlSetData($CreateTabSectionNameInput,"")
+				GUICtrlSetData($CreateTabLabelFileInput,"")
+				GUICtrlSetData($CreateTabPrefixInput,"")
 
 			Case $SafeButton
 				editINI()
@@ -550,13 +553,14 @@ EndFunc
 ;Refresht die Suche nach einer Änderung
 Func Refresh()
 	clearFile() ; löscht erst die bestehenden Werte aus der Labeldatei
+	;ReDim $Labels[0]
 	Local $FileSize = FileGetSize($LabelDatei) ; Prüfen wie Groß die Labeldatei ist
-	$openByLauncher = IniRead($INIFile,"Launcher","openedByLauncher","Konnte nicht gefunden werden") ; prüfen ob das Tool durch den Launcher geöffnet wurde
 	ConsoleWrite("OpendedBylauncher: " & $openByLauncher & @CRLF)
 	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
 	;Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 	Global $SectionNames = IniReadSectionNames($INIFile) ;Speichert die Sectionnames in ein Array
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
+	;_ArrayDisplay($SectionNames)
 
 	;Berechnung der Iterationen
 	Local $totalIterationen = UBound($SectionNames)-1
@@ -601,6 +605,7 @@ Func Refresh()
 
 		; mit der Funktion readLabelFile_Intog_2DArray in das 2D-Array einlesen
 		$Labels = readLabelFile_Into_2DArray($LabelDatei)
+		;_ArrayDisplay($Labels)
 	else
 		; hier muss das Tool nur auf die bereits eingelesenen Werte in der neuen Textdatei zugreifen
 		ConsoleWrite("Die Labeldatei ist nicht leer"& @CRLF)
@@ -608,6 +613,7 @@ Func Refresh()
 		;_FileReadToArray($LabelDatei,$Labels) würde unnötiger weise Doppelt dafür sorgen das die werte in einem Array sind
 		; mit String Split n ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
 		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
+		_ArrayDisplay($Labels)
 		;_ArrayDisplay($Labels,"Labels am Ende der ReadIn Funktion ")
 		If $openByLauncher == "True" then
 			openGUI()
