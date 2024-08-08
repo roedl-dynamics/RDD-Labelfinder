@@ -573,14 +573,14 @@ Func Refresh()
 		if $path == "" then
 			MsgBox(16, @ScriptName,"bitte Dateipfad für " &$SectionNames[$z]&" angeben")
 			$Labelfail = True
-			Main()
+
 		EndIf
 	next
 
 	if UBound($SectionNames)-1 < 4 then
 		MsgBox(16,"Warnung","sie haben keine Labeldateien angegeben")
 		$Labelfail = true
-		Main()
+
 	EndIf
 
 	if $FileSize == 0 then
