@@ -270,8 +270,8 @@ Func openGUI()
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
 
-		;Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20, $PBS_SMOOTH)
-		Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20,  $PBS_MARQUEE)
+		Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20, $PBS_SMOOTH)
+		;Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20,  $PBS_MARQUEE)
 		GUICtrlSetResizing($idProgressbar,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $SearchButton = GUICtrlCreateButton("", 270, 65, 60, 20,$BS_ICON)
@@ -403,6 +403,7 @@ Func openGUI()
 				_GUICtrlComboBox_BeginUpdate($SectionNameInput)
 				_GUICtrlComboBox_AddString($SectionNameInput, GUICtrlRead($CreateTabSectionNameInput))
 				_GUICtrlComboBox_EndUpdate($SectionNameInput)
+				MsgBox(0,"","Wurde erstellt ")
 
 			Case $SafeButton
 				editINI()
@@ -557,10 +558,16 @@ Func Refresh()
 	Global $SectionNames = IniReadSectionNames($INIFile) ;Speichert die Sectionnames in ein Array
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
 
+	;Berechnung der Iterationen
+	Local $totalIterationen = UBound($SectionNames)-1
+	Local $counter = 0
+
 	Local $z
 	For $z = 4 to UBound($SectionNames)-1
-		GUICtrlSendMsg($idProgressbar, $PBM_SETMARQUEE, True, 50)
-		;GUICtrlSetData($idProgressbar, $z)
+		$counter = $counter +1
+		Local $procent = ($counter/$totalIterationen) * 100
+		;GUICtrlSendMsg($idProgressbar, $PBM_SETMARQUEE, True, 50)
+		GUICtrlSetData($idProgressbar, $procent)
 		ConsoleWrite("Springt in die Schleife nach dem $z")
 		Local $path = IniRead($INIFile,$SectionNames[$z],"Labelfile","")
 		if $path == "" then
@@ -609,6 +616,7 @@ Func Refresh()
 	EndIf
 
 	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
-	GUICtrlSendMsg($idProgressbar,$PBM_SETMARQUEE,false,50)
+	;GUICtrlSendMsg($idProgressbar,$PBM_SETMARQUEE,false,50)
+	GUICtrlSetData($idProgressbar, 100)
 	;_ArrayDisplay($Werte)
 EndFunc
