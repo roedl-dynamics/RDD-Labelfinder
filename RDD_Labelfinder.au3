@@ -260,7 +260,7 @@ Func openGUI()
 		Local $Tab = GUICtrlCreateTab(0, 0, 350, 20)
 
 		Global $TabSearch = GUICtrlCreateTabItem("Suche")
-		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 44, 318, 65)
+		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 49, 318, 65)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
 		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,25,60,20)
@@ -274,11 +274,11 @@ Func openGUI()
 		;Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20,  $PBS_MARQUEE)
 		GUICtrlSetResizing($idProgressbar,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $SearchButton = GUICtrlCreateButton("", 270, 65, 60, 20,$BS_ICON)
+		Global $SearchButton = GUICtrlCreateButton("", 270, 70, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
 
-		Global $InputField = GUICtrlCreateInput("", 26, 65, 230, 20)
+		Global $InputField = GUICtrlCreateInput("", 26, 70, 230, 20)
 		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 120, 318, 295)
