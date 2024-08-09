@@ -263,14 +263,14 @@ Func openGUI()
 		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 54, 318, 55)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
-		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,30,60,20)
-		GUICtrlSetResizing($openIniFileButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+		;Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,30,60,20)
+		;GUICtrlSetResizing($openIniFileButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $RefreshButton = GUICtrlCreateButton("",210,30,60,20,$BS_ICON)
+		Global $RefreshButton = GUICtrlCreateButton("",270,30,60,20,$BS_ICON)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
 
-		Global $idProgressbar = GUICtrlCreateProgress(16, 30, 190, 20, $PBS_SMOOTH)
+		Global $idProgressbar = GUICtrlCreateProgress(16, 30, 240, 20, $PBS_SMOOTH)
 		;Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20,  $PBS_MARQUEE)
 		GUICtrlSetResizing($idProgressbar,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
@@ -390,10 +390,12 @@ Func openGUI()
 
 				EndIf
 				GUISetState(@SW_SHOW)
+			#cs
 			Case $openIniFileButton
 				;Local $filePath = @ScriptDir &"\" & $INIFile
 				Local $filePath = $INIFile
 				Run("notepad.exe " & $filePath)
+			#ce
 
 			Case $FileOpenButton
 				local $file =  FileOpenDialog("Wählen sie eine Labeldatei aus", @DesktopDir & "\", "All (*.*)", $FD_FILEMUSTEXIST)
