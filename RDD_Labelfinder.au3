@@ -563,16 +563,12 @@ Func Refresh()
 	Global $SectionNames = IniReadSectionNames($INIFile) ;Speichert die Sectionnames in ein Array
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
 
-	;Berechnung der Iterationen
-	Local $totalIterationen = UBound($SectionNames)-1
-	Local $counter = 0
+	GUICtrlSetData($idProgressbar, 2)
 
 	;prüft ob irgendwo ein Pfad fehlt
 	Local $z
 	For $z = 4 to UBound($SectionNames)-1
-		$counter = $counter +1
-		Local $procent = ($counter/$totalIterationen) * 100
-		GUICtrlSetData($idProgressbar, $procent)
+
 		ConsoleWrite("Springt in die Schleife nach dem $z")
 		Local $path = IniRead($INIFile,$SectionNames[$z],"Labelfile","")
 		if $path == "" then
@@ -589,17 +585,19 @@ Func Refresh()
 	EndIf
 
 	; das eigentliche einlesen der Labels
-	if $FileSize == 0 then
+	;if $FileSize == 0 then
 		; hier muss das Tool die Labels in die neue Textdatei einlesen
 		ConsoleWrite("Die Labeldatei ist leer" & @CRLF)
+		Local $totalIterationen = UBound($SectionNames)-1
+		Local $counter = 0
 		For $i = 1 to Ubound($SectionNames)-1
 			Local $SectionName = $SectionNames[$i]
 			if $SectionName <> "System" and $SectionName <> "General" and $SectionName <> "Launcher" then
 				Local $SectionContent = _ReadInSection($SectionNames[$i])
 				_ArrayAdd($Werte,$SectionContent)
 				_FileWriteFromArray($LabelDatei,$Werte) ; schreibt das Array in das neue Dokument Labels.txt
-			elseIf $SectionName == "Launcher" then
-				$openByLauncher  = IniRead($INIFile,"Launcher","openedByLauncher","")
+				Local $procent = ($counter/$totalIterationen) * 100
+				GUICtrlSetData($idProgressbar, $procent)
 			EndIf
 		next
 		ConsoleWrite("Größe des Arrays(Labels): " & UBound($Labels)&","& UBound($Labels,2) & @CRLF)
@@ -607,19 +605,8 @@ Func Refresh()
 
 		; mit der Funktion readLabelFile_Intog_2DArray in das 2D-Array einlesen
 		$Labels = readLabelFile_Into_2DArray($LabelDatei)
-	else
-		; hier muss das Tool nur auf die bereits eingelesenen Werte in der neuen Textdatei zugreifen
-		ConsoleWrite("Die Labeldatei ist nicht leer"& @CRLF)
-		;MsgBox(0,"","Die Labeldatei ist nicht leer")
-		;_FileReadToArray($LabelDatei,$Labels) würde unnötiger weise Doppelt dafür sorgen das die werte in einem Array sind
-		; mit String Split n ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
-		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
-		;_ArrayDisplay($Labels,"Labels am Ende der ReadIn Funktion ")
-		If $openByLauncher == "True" then
-			openGUI()
-		EndIf
 
-	EndIf
+	;EndIf
 
 	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
 	;GUICtrlSendMsg($idProgressbar,$PBM_SETMARQUEE,false,50)
