@@ -555,97 +555,11 @@ Func _readCustomSections()
 
 EndFunc
 
-#cs
-;Refresht die Suche nach einer Änderung
 Func Refresh()
 	clearFile() ; löscht erst die bestehenden Werte aus der Labeldatei
-	_ArrayDisplay($Labels)
-	ReDim $Labels[0]
-	_ArrayDisplay($Labels)
-
+	ReDim $Werte[0][4]
 	Local $FileSize = FileGetSize($LabelDatei) ; Prüfen wie Groß die Labeldatei ist
-	ConsoleWrite("OpendedBylauncher: " & $openByLauncher & @CRLF)
 	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
-	;Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
-	Global $SectionNames = IniReadSectionNames($INIFile) ;Speichert die Sectionnames in ein Array
-	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
-	;_ArrayDisplay($SectionNames)
-
-	;Berechnung der Iterationen
-	Local $totalIterationen = UBound($SectionNames)-1
-	Local $counter = 0
-
-	Local $z
-	For $z = 4 to UBound($SectionNames)-1
-		$counter = $counter +1
-		Local $procent = ($counter/$totalIterationen) * 100
-		;GUICtrlSendMsg($idProgressbar, $PBM_SETMARQUEE, True, 50)
-		GUICtrlSetData($idProgressbar, $procent)
-		ConsoleWrite("Springt in die Schleife nach dem $z")
-		Local $path = IniRead($INIFile,$SectionNames[$z],"Labelfile","")
-		if $path == "" then
-			MsgBox(16, @ScriptName,"bitte Dateipfad für " &$SectionNames[$z]&" angeben")
-			$Labelfail = True
-
-		EndIf
-	next
-
-	if UBound($SectionNames)-1 < 4 then
-		MsgBox(16,"Warnung","sie haben keine Labeldateien angegeben")
-		$Labelfail = true
-
-	EndIf
-
-	if $FileSize == 0 then
-		; hier muss das Tool die Labels in die neue Textdatei einlesen
-		ConsoleWrite("Die Labeldatei ist leer" & @CRLF)
-		For $i = 1 to Ubound($SectionNames)-1
-			Local $SectionName = $SectionNames[$i]
-			if $SectionName <> "System" and $SectionName <> "General" and $SectionName <> "Launcher" then
-				Local $SectionContent = _ReadInSection($SectionNames[$i])
-				_ArrayAdd($Werte,$SectionContent)
-				_FileWriteFromArray($LabelDatei,$Werte) ; schreibt das Array in das neue Dokument Labels.txt
-			elseIf $SectionName == "Launcher" then
-				$openByLauncher  = IniRead($INIFile,"Launcher","openedByLauncher","")
-			EndIf
-		next
-		ConsoleWrite("Größe des Arrays(Labels): " & UBound($Labels)&","& UBound($Labels,2) & @CRLF)
-		ConsoleWrite("Größe des Arrays(Werte): " & UBound($Werte) & ","&Ubound($Werte,2)& @CRLF)
-
-		;_ArrayDisplay($Labels,"Labels: vor readLabelFile_Into_2DArray ")
-		; mit der Funktion readLabelFile_Intog_2DArray in das 2D-Array einlesen
-		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; Da muss ein Fehler drin sein
-		;_ArrayDisplay($Labels,"Labels: nach readLabelFile_Into_2DArray ")
-	else
-		; hier muss das Tool nur auf die bereits eingelesenen Werte in der neuen Textdatei zugreifen
-		ConsoleWrite("Die Labeldatei ist nicht leer"& @CRLF)
-		;MsgBox(0,"","Die Labeldatei ist nicht leer")
-		;_FileReadToArray($LabelDatei,$Labels) würde unnötiger weise Doppelt dafür sorgen das die werte in einem Array sind
-		; mit String Split n ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
-		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
-		;_ArrayDisplay($Labels)
-		;_ArrayDisplay($Labels,"Labels am Ende der ReadIn Funktion ")
-		If $openByLauncher == "True" then
-			openGUI()
-		EndIf
-
-	EndIf
-
-	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
-	;GUICtrlSendMsg($idProgressbar,$PBM_SETMARQUEE,false,50)
-	GUICtrlSetData($idProgressbar, 100)
-	;_ArrayDisplay($Werte)
-EndFunc
-#ce
-
-
-Func Refresh()
-	clearFile() ; löscht erst die bestehenden Werte aus der Labeldatei
-	Local $FileSize = FileGetSize($LabelDatei) ; Prüfen wie Groß die Labeldatei ist
-	$openByLauncher = IniRead($INIFile,"Launcher","openedByLauncher","Konnte nicht gefunden werden") ; prüfen ob das Tool durch den Launcher geöffnet wurde
-	ConsoleWrite("OpendedBylauncher: " & $openByLauncher & @CRLF)
-	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
-	;Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 	Global $SectionNames = IniReadSectionNames($INIFile) ;Speichert die Sectionnames in ein Array
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
 
@@ -653,27 +567,28 @@ Func Refresh()
 	Local $totalIterationen = UBound($SectionNames)-1
 	Local $counter = 0
 
+	;prüft ob irgendwo ein Pfad fehlt
 	Local $z
 	For $z = 4 to UBound($SectionNames)-1
 		$counter = $counter +1
 		Local $procent = ($counter/$totalIterationen) * 100
-		;GUICtrlSendMsg($idProgressbar, $PBM_SETMARQUEE, True, 50)
 		GUICtrlSetData($idProgressbar, $procent)
 		ConsoleWrite("Springt in die Schleife nach dem $z")
 		Local $path = IniRead($INIFile,$SectionNames[$z],"Labelfile","")
 		if $path == "" then
 			MsgBox(16, @ScriptName,"bitte Dateipfad für " &$SectionNames[$z]&" angeben")
 			$Labelfail = True
-			Main()
+			;Main()
 		EndIf
 	next
-
+	;prüft ob überhaupt eine Datei angegeben ist
 	if UBound($SectionNames)-1 < 4 then
 		MsgBox(16,"Warnung","sie haben keine Labeldateien angegeben")
 		$Labelfail = true
-		Main()
+		;Main()
 	EndIf
 
+	; das eigentliche einlesen der Labels
 	if $FileSize == 0 then
 		; hier muss das Tool die Labels in die neue Textdatei einlesen
 		ConsoleWrite("Die Labeldatei ist leer" & @CRLF)
