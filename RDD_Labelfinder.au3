@@ -252,39 +252,39 @@ EndFunc
 Func openGUI()
 	#Region ### START Koda GUI section ### Form=
 		Local $minWidth = 350 ; an die neue Größe anpassen
-		Local $minHeigt = 460 ; an die neue Größe anpassen
+		Local $minHeigt = 490 ; an die neue Größe anpassen
 
-		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",350, 480, 190, 201,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
+		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",350, 485, 190, 201,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
 		GUICtrlSetResizing($Form1,$GUI_DOCKAUTO)
 
 		Local $Tab = GUICtrlCreateTab(0, 0, 350, 20)
 
 		Global $TabSearch = GUICtrlCreateTabItem("Suche")
-		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 49, 318, 65)
+		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 54, 318, 65)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
-		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,25,60,20)
+		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,30,60,20)
 		GUICtrlSetResizing($openIniFileButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $RefreshButton = GUICtrlCreateButton("",210,25,60,20,$BS_ICON)
+		Global $RefreshButton = GUICtrlCreateButton("",210,30,60,20,$BS_ICON)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
 
-		Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20, $PBS_SMOOTH)
+		Global $idProgressbar = GUICtrlCreateProgress(16, 30, 190, 20, $PBS_SMOOTH)
 		;Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20,  $PBS_MARQUEE)
 		GUICtrlSetResizing($idProgressbar,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $SearchButton = GUICtrlCreateButton("", 270, 70, 60, 20,$BS_ICON)
+		Global $SearchButton = GUICtrlCreateButton("", 270, 75, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
 
-		Global $InputField = GUICtrlCreateInput("", 26, 70, 230, 20)
+		Global $InputField = GUICtrlCreateInput("", 26, 75, 230, 20)
 		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 120, 318, 295)
+		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 125, 318, 295)
 		GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKBOTTOM)
 
-		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 16, 420, 318, 27)
+		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 16, 425, 318, 27)
 		GUICtrlSetResizing(-1 ,$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKBOTTOM+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT)
 		GUICtrlCreateTabItem("")
 
