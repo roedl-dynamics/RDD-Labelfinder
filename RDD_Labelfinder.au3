@@ -260,7 +260,7 @@ Func openGUI()
 		Local $Tab = GUICtrlCreateTab(0, 0, 350, 20)
 
 		Global $TabSearch = GUICtrlCreateTabItem("Suche")
-		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 54, 318, 65)
+		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 54, 318, 55)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
 		Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,30,60,20)
@@ -281,7 +281,7 @@ Func openGUI()
 		Global $InputField = GUICtrlCreateInput("", 26, 75, 230, 20)
 		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 125, 318, 295)
+		Global $hListView = GUICtrlCreateListView("Label|Text|Kommentar", 16, 120, 318, 295)
 		GUICtrlSetResizing($hListView ,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKBOTTOM)
 
 		Global $TakeOverButton = GUICtrlCreateButton("Label übernehmen", 16, 425, 318, 27)
