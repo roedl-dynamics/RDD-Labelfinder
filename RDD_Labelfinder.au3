@@ -290,7 +290,7 @@ Func openGUI()
 
 		Global $TabEdit = GUICtrlCreateTabItem("Edit")
 		Global $InputMaxResults = GUICtrlCreateInput("", 128, 33, 153, 21)
-		;GUICtrlSetResizing($InputMaxResults,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		GUICtrlSetResizing($InputMaxResults,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $LabelMaxResults = GUICtrlCreateLabel("MaxSearchResults: ", 16, 33, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
@@ -300,18 +300,19 @@ Func openGUI()
 
 		$SectionNameInput = GUICtrlCreateCombo("", 128, 66, 153, 21)
 		GUICtrlSetData($SectionNameInput, _ArrayToString($sections, "|"))
+		GUICtrlSetResizing($SectionNameInput,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $LabelLabelFile = GUICtrlCreateLabel("Labeldatei: ", 16, 99, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
 		Global $InputLabelFile = GUICtrlCreateInput("", 128, 99, 153, 21)
-		;GUICtrlSetResizing($InputLabelFile,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $PrefixLabel = GUICtrlCreateLabel("Prefix: ", 16, 132, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
 		Global $InputPrefix = GUICtrlCreateInput("", 128, 132, 153, 21)
-		;GUICtrlSetResizing($InputPrefix,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $FileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
@@ -330,11 +331,13 @@ Func openGUI()
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
 		Global $CreateTabSectionNameInput = GUICtrlCreateInput("", 128, 66, 153, 21)
+		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $CreateTabLabelFileLabel = GUICtrlCreateLabel("Labeldatei: ", 16, 99, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
 		Global $CreateTabLabelFileInput = GUICtrlCreateInput("", 128, 99, 153, 21)
+		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $CreateTabFileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
@@ -343,6 +346,7 @@ Func openGUI()
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
 		Global $CreateTabPrefixInput =  GUICtrlCreateInput("", 128, 132, 153, 21)
+		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $CreateButton = GUICtrlCreateButton("Create",128,205,100,25)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
@@ -385,6 +389,7 @@ Func openGUI()
 					WinMove($Form1,"",$NewSize[0],$NewSize[1],$minWidth,$minHeigt)
 
 				EndIf
+				GUISetState(@SW_SHOW)
 			Case $openIniFileButton
 				;Local $filePath = @ScriptDir &"\" & $INIFile
 				Local $filePath = $INIFile
