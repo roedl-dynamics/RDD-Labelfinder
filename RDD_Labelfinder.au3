@@ -373,6 +373,7 @@ Func openGUI()
 				GUICtrlSetData($hListView, "")
 				search()
 			Case $RefreshButton
+				GUICtrlSetData($idProgressbar,0)
 				Refresh()
 			Case $TakeOverButton
 				TakeOver()
@@ -565,7 +566,7 @@ Func Refresh()
 	Global $SectionNames = IniReadSectionNames($INIFile) ;Speichert die Sectionnames in ein Array
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
 
-	GUICtrlSetData($idProgressbar, 2)
+	;GUICtrlSetData($idProgressbar, 2)
 
 	;prüft ob irgendwo ein Pfad fehlt
 	Local $z
@@ -576,21 +577,19 @@ Func Refresh()
 		if $path == "" then
 			MsgBox(16, @ScriptName,"bitte Dateipfad für " &$SectionNames[$z]&" angeben")
 			$Labelfail = True
-			;Main()
 		EndIf
 	next
 	;prüft ob überhaupt eine Datei angegeben ist
 	if UBound($SectionNames)-1 < 4 then
 		MsgBox(16,"Warnung","sie haben keine Labeldateien angegeben")
 		$Labelfail = true
-		;Main()
 	EndIf
 
 	; das eigentliche einlesen der Labels
 	;if $FileSize == 0 then
 		; hier muss das Tool die Labels in die neue Textdatei einlesen
 		ConsoleWrite("Die Labeldatei ist leer" & @CRLF)
-		Local $totalIterationen = UBound($SectionNames)-1
+		;Local $totalIterationen = UBound($SectionNames)-1
 		Local $counter = 0
 		For $i = 1 to Ubound($SectionNames)-1
 			Local $SectionName = $SectionNames[$i]
@@ -598,20 +597,68 @@ Func Refresh()
 				Local $SectionContent = _ReadInSection($SectionNames[$i])
 				_ArrayAdd($Werte,$SectionContent)
 				_FileWriteFromArray($LabelDatei,$Werte) ; schreibt das Array in das neue Dokument Labels.txt
-				Local $procent = ($counter/$totalIterationen) * 100
-				GUICtrlSetData($idProgressbar, $procent)
+				;Local $procent = ($counter/$totalIterationen) * 100
+				;GUICtrlSetData($idProgressbar, $procent)
 			EndIf
 		next
 		ConsoleWrite("Größe des Arrays(Labels): " & UBound($Labels)&","& UBound($Labels,2) & @CRLF)
 		ConsoleWrite("Größe des Arrays(Werte): " & UBound($Werte) & ","&Ubound($Werte,2)& @CRLF)
 
 		; mit der Funktion readLabelFile_Intog_2DArray in das 2D-Array einlesen
-		$Labels = readLabelFile_Into_2DArray($LabelDatei)
+		$Labels = readLabelFile_Into_2DArray_Refresh($LabelDatei)
 
 	;EndIf
 
 	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
 	;GUICtrlSendMsg($idProgressbar,$PBM_SETMARQUEE,false,50)
-	GUICtrlSetData($idProgressbar, 100)
+	;GUICtrlSetData($idProgressbar, 100)
 	;_ArrayDisplay($Werte)
+EndFunc
+
+Func readLabelFile_Into_2DArray_Refresh($pFile)
+    ; Prüft ob das File existiert
+    if Not FileExists($pFile) then
+        MsgBox(16, @ScriptName, "Datei " & $pFile & " wurde nicht gefunden")
+    EndIf
+
+    Local $FileContent = FileReadToArray($pFile) ; Schreibt den Inhalt des Files in ein Array
+    ;_ArrayDisplay($FileContent, "Filecontent:") ;zeigt zum Debuggen das Array an
+
+    Local $FileContent_Rows = UBound($FileContent) - 1 ; Anzahl der Zeilen
+    ConsoleWrite("$FileContent_Rows=" & $FileContent_Rows & @CRLF) ; gibt zum Debuggen die Anzahl der Zeilen aus
+    Local $ValuesCurrentFile[$FileContent_Rows][4] ; Array zum Speichern der Inhalte des aktuellen Files
+
+    Local $CurrentPos = 0
+    Local $totalIterationen = $FileContent_Rows ; Anzahl der Zeilen, die gelesen werden müssen
+    Local $procent = 0
+
+    For $n = 0 To $FileContent_Rows - 1
+        Local $FileContentLine = $FileContent[$n]
+
+        If StringLeft($FileContentLine, 1) <> " " Then
+            Local $tmpArray = StringSplit($FileContentLine, "|")
+            ConsoleWrite("CurrentPos " & $CurrentPos & @CRLF)
+            ;_ArrayDisplay($tmpArray, "Das richtige Array")
+
+            Local $label = $tmpArray[1]
+            Local $text = $tmpArray[2]
+            Local $comment = ""
+            Local $prefix = $tmpArray[4]
+
+            ;_ArrayDisplay($ValuesCurrentFile, "valuesCurrentFile")
+
+            $ValuesCurrentFile[$CurrentPos][0] = $label
+            $ValuesCurrentFile[$CurrentPos][1] = $text
+            $ValuesCurrentFile[$CurrentPos][2] = $comment
+            $ValuesCurrentFile[$CurrentPos][3] = $prefix
+
+            $CurrentPos += 1
+        EndIf
+
+        ; Berechnung des Fortschritts in %
+        $procent = (($n + 1) / $totalIterationen) * 100
+        GUICtrlSetData($idProgressbar, $procent)
+
+    Next
+    Return $ValuesCurrentFile
 EndFunc
