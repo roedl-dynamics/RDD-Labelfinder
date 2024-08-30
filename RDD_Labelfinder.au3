@@ -333,22 +333,22 @@ Func openGUI()
 		;Global $CreateTabSectionNameInput = GUICtrlCreateInput("", 128, 66, 153, 21)
 		;GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $CreateTabLabelFileLabel = GUICtrlCreateLabel("Labeldatei: ", 16, 99, 100, 17)
+		Global $CreateTabLabelFileLabel = GUICtrlCreateLabel("Labeldatei: ", 16, 33, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
-		Global $CreateTabLabelFileInput = GUICtrlCreateInput("", 128, 99, 153, 21)
+		Global $CreateTabLabelFileInput = GUICtrlCreateInput("", 128, 33, 153, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $CreateTabFileOpenButton = GUICtrlCreateButton("...", 288, 99, 41, 21)
+		Global $CreateTabFileOpenButton = GUICtrlCreateButton("...", 288, 33, 41, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $CreateTabPrefixLabel =  GUICtrlCreateLabel("Prefix: ", 16, 132, 100, 17)
+		Global $CreateTabPrefixLabel =  GUICtrlCreateLabel("Prefix: ", 16, 66, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
-		Global $CreateTabPrefixInput =  GUICtrlCreateInput("", 128, 132, 153, 21)
+		Global $CreateTabPrefixInput =  GUICtrlCreateInput("", 128, 66, 153, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $CreateButton = GUICtrlCreateButton("Create",128,205,100,25)
+		Global $CreateButton = GUICtrlCreateButton("Create",128,103,100,25)
 		;GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		GUICtrlSetResizing(-1,$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKRIGHT)
 
