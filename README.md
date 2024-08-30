@@ -32,3 +32,4 @@ For further informations have a look at the official AutoIt [website](https://ww
 
 Search-icon: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html <br>
 Designer of the Exe-Icon: https://twitter.com/doublejdesign 
+Reload Icon: **https://www.iconarchive.com/show/100-flat-icons-by-graphicloads/reload-icon.html**
