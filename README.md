@@ -31,5 +31,5 @@ For further informations have a look at the official AutoIt [website](https://ww
 <h1> item Source:  </h1>
 
 Search-icon: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html <br>
-Designer of the Exe-Icon: https://twitter.com/doublejdesign 
+Designer of the Exe-Icon: https://twitter.com/doublejdesign <br>
 Reload Icon: **https://www.iconarchive.com/show/100-flat-icons-by-graphicloads/reload-icon.html**
