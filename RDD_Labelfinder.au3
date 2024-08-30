@@ -327,11 +327,11 @@ Func openGUI()
 
 		Global $TabCreate = GUICtrlCreateTabItem("Create")
 
-		Global $CreateTabSectionNameLabel = GUICtrlCreateLabel("Sectionname: ",16,66,100,17)
-		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
+		;Global $CreateTabSectionNameLabel = GUICtrlCreateLabel("Sectionname: ",16,66,100,17)
+		;GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
-		Global $CreateTabSectionNameInput = GUICtrlCreateInput("", 128, 66, 153, 21)
-		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
+		;Global $CreateTabSectionNameInput = GUICtrlCreateInput("", 128, 66, 153, 21)
+		;GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $CreateTabLabelFileLabel = GUICtrlCreateLabel("Labeldatei: ", 16, 99, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
@@ -410,11 +410,13 @@ Func openGUI()
 
 			Case $CreateButton
 				createINISection()
+				#cs
 				_GUICtrlComboBox_BeginUpdate($SectionNameInput)
 				_GUICtrlComboBox_AddString($SectionNameInput, GUICtrlRead($CreateTabSectionNameInput))
 				_GUICtrlComboBox_EndUpdate($SectionNameInput)
+				#ce
 				MsgBox(0,"","Wurde erstellt ")
-				GUICtrlSetData($CreateTabSectionNameInput,"")
+				;GUICtrlSetData($CreateTabSectionNameInput,"")
 				GUICtrlSetData($CreateTabLabelFileInput,"")
 				GUICtrlSetData($CreateTabPrefixInput,"")
 
@@ -506,13 +508,18 @@ Func createINISection()
 	Local $SectionNameSplitt = StringSplit($tmpSection,".")
 	Local $NewSectionName = $SectionNameSplitt[1]
 
-	GUICtrlSetData($CreateTabSectionNameInput,$NewSectionName)
+	;GUICtrlSetData($CreateTabSectionNameInput,$NewSectionName)
 	local $SectionNameValue = $NewSectionName
 
 	local $Keys = "Labelfile=" & @CRLF &  "Labelprefix="
 	IniWriteSection($INIFile,$SectionNameValue,$Keys,1)
 	IniWrite($INIFile,$SectionNameValue,"Labelfile",$LabelFileValue)
 	IniWrite($INIFile,$SectionNameValue,"Labelprefix",$PrefixValue)
+
+	;hinzufügen des Sectionnames in die Combobox
+	_GUICtrlComboBox_BeginUpdate($SectionNameInput)
+	_GUICtrlComboBox_AddString($SectionNameInput,$NewSectionName)
+	_GUICtrlComboBox_EndUpdate($SectionNameInput)
 
 EndFunc
 
