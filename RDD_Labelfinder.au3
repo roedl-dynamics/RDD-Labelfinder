@@ -13,6 +13,7 @@
 
 ; Search Icon Source: https://www.iconarchive.com/show/vista-artistic-icons-by-awicons/search-icon.html
 ; Link to the Twitter-Account to the Creater of the ICO-File: https://twitter.com/doublejdesign
+; Link to the Reload Icon: https://www.iconarchive.com/show/100-flat-icons-by-graphicloads/reload-icon.html
 ;#NoTrayIcon
 
 Opt ("MustDeclareVars",1)
