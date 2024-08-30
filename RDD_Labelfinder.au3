@@ -349,9 +349,10 @@ Func openGUI()
 		Global $CreateTabPrefixInput =  GUICtrlCreateInput("", 128, 66, 153, 21)
 		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
-		Global $CreateButton = GUICtrlCreateButton("Create",128,103,100,25)
+		Global $CreateButton = GUICtrlCreateButton("Create",153,103,100,25)
 		;GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
-		GUICtrlSetResizing(-1,$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKRIGHT)
+		;GUICtrlSetResizing(-1,$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKRIGHT)
+		GUICtrlSetResizing(-1,$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT)
 
 		GUICtrlCreateTabItem("")
 
