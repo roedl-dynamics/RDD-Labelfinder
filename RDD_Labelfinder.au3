@@ -2,7 +2,7 @@
 #AutoIt3Wrapper_Icon=Labelfinder.ico
 #AutoIt3Wrapper_Res_Comment=D365 Tool für eine schnelle Labelsuche
 #AutoIt3Wrapper_Res_Description=RD Labelfinder
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.6
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.7
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
 #AutoIt3Wrapper_Res_ProductName=RD Labelfinder
 #AutoIt3Wrapper_Res_CompanyName=Rödl Dynamics GmbH
@@ -349,7 +349,8 @@ Func openGUI()
 		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $CreateButton = GUICtrlCreateButton("Create",128,205,100,25)
-		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+		;GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
+		GUICtrlSetResizing(-1,$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKRIGHT)
 
 		GUICtrlCreateTabItem("")
 
@@ -374,6 +375,7 @@ Func openGUI()
 				search()
 			Case $RefreshButton
 				GUICtrlSetData($idProgressbar,0)
+				GUICtrlSetData($idProgressbar,1)
 				Refresh()
 			Case $TakeOverButton
 				TakeOver()
@@ -496,12 +498,16 @@ Func clearFile()
 EndFunc
 
 Func createINISection()
-	local $SectionNameValue = GUICtrlRead($CreateTabSectionNameInput)
 	local $LabelFileValue = GUICtrlRead($CreateTabLabelFileInput)
 	local $PrefixValue = GUICtrlRead($CreateTabPrefixInput)
 
-	;local $Keys = "Labelfile= " & @CRLF & _
-     ;            "Labelprefix ="
+	Local $InputArray = StringSplit($LabelFileValue,"\")
+	Local $tmpSection = $InputArray[UBound($InputArray)-1]
+	Local $SectionNameSplitt = StringSplit($tmpSection,".")
+	Local $NewSectionName = $SectionNameSplitt[1]
+
+	GUICtrlSetData($CreateTabSectionNameInput,$NewSectionName)
+	local $SectionNameValue = $NewSectionName
 
 	local $Keys = "Labelfile=" & @CRLF &  "Labelprefix="
 	IniWriteSection($INIFile,$SectionNameValue,$Keys,1)
