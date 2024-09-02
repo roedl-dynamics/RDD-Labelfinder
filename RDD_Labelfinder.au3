@@ -2,7 +2,7 @@
 #AutoIt3Wrapper_Icon=Labelfinder.ico
 #AutoIt3Wrapper_Res_Comment=D365 Tool für eine schnelle Labelsuche
 #AutoIt3Wrapper_Res_Description=RD Labelfinder
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.8
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.9
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
 #AutoIt3Wrapper_Res_ProductName=RD Labelfinder
 #AutoIt3Wrapper_Res_CompanyName=Rödl Dynamics GmbH
