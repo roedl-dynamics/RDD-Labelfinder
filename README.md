@@ -1,6 +1,6 @@
 <h1>Labelfinder</h1>
 the script enables a faster search of labels from specified label files.<br>
-[Labelfinder](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/LabelfinderGUI)
+[Labelfinder](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/LabelfinderGUI.PNG)
 <h2> How to Use </h2>
 
 <ul>
