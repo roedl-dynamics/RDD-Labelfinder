@@ -255,7 +255,7 @@ Func openGUI()
 		Local $minWidth = 350 ; an die neue Größe anpassen
 		Local $minHeigt = 490 ; an die neue Größe anpassen
 
-		Global $Form1 = GUICreate("Rödl Dynamics - Label Suche",350, 485, 190, 201,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
+		Global $Form1 = GUICreate("Visionet Dynamics - Label Suche",350, 485, 190, 201,BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)) ;BitOR($WS_SIZEBOX, $WS_SYSMENU, $WS_MINIMIZEBOX)
 		GUICtrlSetResizing($Form1,$GUI_DOCKAUTO)
 
 		Local $Tab = GUICtrlCreateTab(0, 0, 350, 20)
