@@ -3,13 +3,13 @@
  the script enables a faster search of labels from specified label files.
 </p>
 
-![image](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/LabelfinderGUI.PNG) <br>
+![image](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/LabelfinderGUI_Visionet.PNG) <br>
  Search GUI 
 
-![image](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/EditTabGUI.PNG) <br>
+![image](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/EditTabGUI_Visionet.PNG) <br>
 Edit Tab
 
-![image](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/CreateTabGUI.PNG) <br>
+![image](https://github.com/roedl-dynamics/RDD-Labelfinder/blob/main/CreateTabGUI_Visionet.PNG) <br>
 Create Tab
 
 <h2> How to Use </h2>
