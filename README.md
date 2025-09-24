@@ -1,4 +1,4 @@
-<h1>Labelfinder</h1>
+<h1>Visionet Labelfinder</h1>
 <p>
  the script enables a faster search of labels from specified label files.
 </p>
