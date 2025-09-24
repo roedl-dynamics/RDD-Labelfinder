@@ -28,8 +28,10 @@ Create Tab
 <ol>
   <li>Place an INI file named "AutoLabelSearch.au3.ini" in the same folder as the script</li>
   <li>Name the first section "System" and add "MaxSearchResults" as key</li>
-  <li>When you start the .exe it will start in the background...</li>
-  <!-- Weitere Punkte -->
+  <li>When you start the .exe it will start in the background, you can opnen the GUI in the Windows System Tray.</li>
+  <li>after starting the GUI, you can search labels by typing in the search field and clicking on the Search Button eith the magnifying glass. the results are displayed in the listview.</li>
+ <li> Clicking on the label you are looking for in the ListView and clicking on the "Label übernehmen"- button.It will copy the label and the associated prefix into the clipboard.</li>
+ <li> You can add your own label files via the Create tab and Edit Sections in the Edittab. after adding or editing a section, please do a refresh</li>
 </ol>
 
 
