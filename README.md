@@ -25,6 +25,13 @@ Create Tab
 
 
 
+<ol>
+  <li>Place an INI file named "AutoLabelSearch.au3.ini" in the same folder as the script</li>
+  <li>Name the first section "System" and add "MaxSearchResults" as key</li>
+  <li>When you start the .exe it will start in the background...</li>
+  <!-- Weitere Punkte -->
+</ol>
+
 
 
 
