@@ -2,7 +2,7 @@
 #AutoIt3Wrapper_Icon=Labelfinder.ico
 #AutoIt3Wrapper_Res_Comment=D365 Tool für eine schnelle Labelsuche
 #AutoIt3Wrapper_Res_Description=Visionet Labelfinder
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.15
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.16
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
 #AutoIt3Wrapper_Res_ProductName=Visionet Labelfinder
 #AutoIt3Wrapper_Res_CompanyName=Visionet Dynamics GmbH
@@ -42,8 +42,6 @@ Opt("TrayMenuMode", 3) ;
 Global $INIFile = @ScriptDir & "\AutoLabelSearch.au3.ini"
 Global $MaxSearchResults
 ;Global $SearchResults[0]
-Global $Imagepath = @ScriptDir &"\Search.ico"
-GLobal $RefreshImagePath = @ScriptDir & "\Refresh.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
 Global $Werte [0][4] ; bleibt umd die Daten aus dem INI File auszulesen
