@@ -279,7 +279,7 @@ Func openGUI()
 		;Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,30,60,20)
 		;GUICtrlSetResizing($openIniFileButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 
-		Global $RefreshButton = GUICtrlCreateButton("",270,30,60,20,$BS_ICON)
+		Global $RefreshButton = GUICtrlCreateButton("",270,30,60,23,$BS_ICON)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
 		;GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
 
@@ -296,8 +296,8 @@ Func openGUI()
 		Global $hRefreshButton = GUICtrlGetHandle($RefreshButton)
 
 		;Icons Laden
-		Global $hSearchIcon = _WinAPI_LoadImage(0, @TempDir & "\Search.ico", $IMAGE_ICON, 24, 24, $LR_LOADFROMFILE)
-		Global $hRefreshIcon = _WinAPI_LoadImage(0, @TempDir & "\Refresh.ico", $IMAGE_ICON, 24, 24, $LR_LOADFROMFILE)
+		Global $hSearchIcon = _WinAPI_LoadImage(0, @TempDir & "\Search.ico", $IMAGE_ICON, 16, 16, $LR_LOADFROMFILE)
+		Global $hRefreshIcon = _WinAPI_LoadImage(0, @TempDir & "\Refresh.ico", $IMAGE_ICON, 17, 17, $LR_LOADFROMFILE)
 		;Icons zuweisen
 		_SendMessage($hSearchButton,$BM_SETIMAGE,$IMAGE_ICON,$hSearchIcon) ;Search Button
 		_SendMessage($hRefreshButton,$BM_SETIMAGE,$IMAGE_ICON,$hRefreshIcon) ;Refresh Button
