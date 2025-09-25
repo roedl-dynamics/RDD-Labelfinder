@@ -41,18 +41,13 @@ Opt ("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
 Global $INIFile = @ScriptDir & "\AutoLabelSearch.au3.ini"
 Global $MaxSearchResults
-;Global $SearchResults[0]
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
 Global $Werte [0][4] ; bleibt umd die Daten aus dem INI File auszulesen
 
-;Global Const $BM_SETIMAGE = 0xF7 ; Für das Integrieren der  ico Dateien notwendig
-; $BM_SETIMAGE = 0xF7 ; Für das Integrieren der  ico Dateien notwendig
-
 ;Bereitstellen der ICONs
 FileInstall("Refresh.ico", @TempDir & "\Refresh.ico", 1)
 FileInstall("Search.ico", @TempDir & "\Search.ico", 1)
-
 
 ; zum Test
 Global $LabelDatei = @ScriptDir& "\Labels.txt" ; Zusätzliche Textdatei die die Werte Zwischenspeichert das das Tool im Launcher verwendbar ist
@@ -70,7 +65,6 @@ Func ReadIn()
 	$openByLauncher = IniRead($INIFile,"Launcher","openedByLauncher","Konnte nicht gefunden werden")
 	ConsoleWrite("OpendedBylauncher: " & $openByLauncher & @CRLF)
 	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
-	;Global $SectionNames = IniReadSectionNames(@ScriptDir & "\" & $INIFile)
 	Global $SectionNames = IniReadSectionNames($INIFile)
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
 
@@ -112,11 +106,8 @@ Func ReadIn()
 	else
 		; hier muss das Tool nur auf die bereits eingelesenen Werte in der neuen Textdatei zugreifen
 		ConsoleWrite("Die Labeldatei ist nicht leer"& @CRLF)
-		;MsgBox(0,"","Die Labeldatei ist nicht leer")
-		;_FileReadToArray($LabelDatei,$Labels) würde unnötiger weise Doppelt dafür sorgen das die werte in einem Array sind
 		; mit String Split n ein neues 2D Array einlesen ähnlich der Funktion _ReadInSection eigene Methode dafür unten
 		$Labels = readLabelFile_Into_2DArray($LabelDatei) ; methode zum einlesen der Datei in das 2D Array
-		;_ArrayDisplay($Labels,"Labels am Ende der ReadIn Funktion ")
 		If $openByLauncher == "True" then
 			openGUI()
 		EndIf
@@ -124,7 +115,6 @@ Func ReadIn()
 	EndIf
 
 	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
-	;_ArrayDisplay($Werte)
 	Main()
 EndFunc
 
@@ -133,39 +123,26 @@ Func _ReadInSection($pSectionName)
 	Local $tmpFilePath = IniRead($INIFile,$pSectionName, "Labelfile","")
 	Local $LabelPrefix = IniRead($INIFile,$pSectionName,"Labelprefix","")
 
-#cs
-	if $tmpFilePath == "" then
-		MsgBox(16, @ScriptName,"bitte Dateipfad für " &$pSectionName&" angeben")
-	EndIf
-#ce
-
 	if Not FileExists($tmpFilePath) Then
 		MsgBox(16,@ScriptName, "Datei " & $tmpFilePath & " wurde nicht gefunden")
 	endif
 
 	Local $FileContent = FileReadToArray($tmpFilePath)
 
-	;_ArrayDisplay($FileContent,"$FileContent");
-
 	Local $FileContent_Rows = Ubound($FileContent)-1
 	ConsoleWrite("$FileContent_Rows="  & $FileContent_Rows & @CRLF)
 	Local $ValuesCurrentFile[$FileContent_Rows][4]
-	;_ArrayDisplay($ValuesCurrentFile)
 
 	Local $n
 	Local $CurrentPos = 0
-
-	;_ArrayDisplay($FileContent_Rows)
 
 	For $n = 0 to $FileContent_Rows-1
 
 		Local $FileContentLine = $FileContent[$n]
 
-
 		; String left um herauszufinden womit die Zeile beginnt
 		If StringLeft($FileContentLine,1) <> " " Then
 			local $tmpArray = StringSplit($FileContentLine,"=")
-			;_ArrayDisplay($tmpArray)
 
 			Local $label = $tmpArray[1]
 			Local $text = $tmpArray[2]
@@ -182,12 +159,9 @@ Func _ReadInSection($pSectionName)
 
 			$CurrentPos += 1
 		EndIf
-
 	next
 
-	 $ValuesCurrentFile = _ArrayExtract($ValuesCurrentFile, 0, $CurrentPos-1)
-
-	;_ArrayDisplay($ValuesCurrentFile)
+	$ValuesCurrentFile = _ArrayExtract($ValuesCurrentFile, 0, $CurrentPos-1)
 	Return $ValuesCurrentFile
 
 EndFunc
@@ -200,7 +174,6 @@ Func readLabelFile_Into_2DArray($pFile)
 	EndIf
 
 	Local $FileContent = FileReadToArray($pFile) ; Schreibt den Inhalt des Files in ein Array
-	;_ArrayDisplay($FileContent,"Filecontent:") ;zeugt zum debuggen das Array an
 
 	Local $FileContent_Rows = UBound($FileContent)-1 ; anzahl der Zeilen
 	ConsoleWrite("$FileContent_Rows=" & $FileContent_Rows & @CRLF) ; gibt zum Debuggen die Anzahl der Zeilen aus
@@ -215,14 +188,11 @@ Func readLabelFile_Into_2DArray($pFile)
 		If StringLeft($FileContentLine,1) <> " " Then
 			Local $tmpArray = StringSplit($FileContentLine,"|")
 			ConsoleWrite("CurrentPos "& $CurrentPos & @CRLF)
-			;_ArrayDisplay($tmpArray,"Das richtige Array")
 
 			Local $label = $tmpArray[1]
 			Local $text = $tmpArray[2]
 			Local $comment = ""
 			Local $prefix = $tmpArray[4]
-
-			;_ArrayDisplay($ValuesCurrentFile,"valuesCurrentFile")
 
 			$ValuesCurrentFile[$CurrentPos][0] = $label
 			$ValuesCurrentFile[$CurrentPos][1] = $text
@@ -234,9 +204,7 @@ Func readLabelFile_Into_2DArray($pFile)
 		EndIf
 
 	next
-
-		;_ArrayDisplay($ValuesCurrentFile," vor dem Return valuesCurrentFile")
-		Return $ValuesCurrentFile
+	Return $ValuesCurrentFile
 EndFunc
 
 
@@ -274,20 +242,14 @@ Func openGUI()
 		Global $Group1 = GUICtrlCreateGroup("Suche", 16, 54, 318, 55)
 		GUICtrlSetResizing($Group1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
-		;Global $openIniFileButton = GUICtrlCreateButton("Open INI",270,30,60,20)
-		;GUICtrlSetResizing($openIniFileButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
-
 		Global $RefreshButton = GUICtrlCreateButton("",270,30,60,23,$BS_ICON)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
-		;GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
 
 		Global $idProgressbar = GUICtrlCreateProgress(16, 30, 240, 20, $PBS_SMOOTH)
-		;Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20,  $PBS_MARQUEE)
 		GUICtrlSetResizing($idProgressbar,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $SearchButton = GUICtrlCreateButton("", 270, 75, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
-		;GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
 
 		;Handle für die beiden Buttons Search und Refresh
 		Global $hSearchButton = GUICtrlGetHandle($SearchButton)
@@ -349,12 +311,6 @@ Func openGUI()
 
 		Global $TabCreate = GUICtrlCreateTabItem("Create")
 
-		;Global $CreateTabSectionNameLabel = GUICtrlCreateLabel("Sectionname: ",16,66,100,17)
-		;GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
-
-		;Global $CreateTabSectionNameInput = GUICtrlCreateInput("", 128, 66, 153, 21)
-		;GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
-
 		Global $CreateTabLabelFileLabel = GUICtrlCreateLabel("Labeldatei: ", 16, 33, 100, 17)
 		GUICtrlSetResizing(-1,$GUI_DOCKAUTO+$GUI_DOCKLEFT+$GUI_DOCKRIGHT+$GUI_DOCKTOP+$GUI_DOCKHCENTER+$GUI_DOCKVCENTER+$GUI_DOCKHEIGHT)
 
@@ -371,8 +327,6 @@ Func openGUI()
 		GUICtrlSetResizing(-1,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
 
 		Global $CreateButton = GUICtrlCreateButton("Create",153,103,100,25)
-		;GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
-		;GUICtrlSetResizing(-1,$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKRIGHT)
 		GUICtrlSetResizing(-1,$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT)
 
 		GUICtrlCreateTabItem("")
@@ -416,12 +370,6 @@ Func openGUI()
 
 				EndIf
 				GUISetState(@SW_SHOW)
-			#cs
-			Case $openIniFileButton
-				;Local $filePath = @ScriptDir &"\" & $INIFile
-				Local $filePath = $INIFile
-				Run("notepad.exe " & $filePath)
-			#ce
 
 			Case $FileOpenButton
 				local $file =  FileOpenDialog("Wählen sie eine Labeldatei aus", @DesktopDir & "\", "All (*.*)", $FD_FILEMUSTEXIST)
@@ -433,13 +381,7 @@ Func openGUI()
 
 			Case $CreateButton
 				createINISection()
-				#cs
-				_GUICtrlComboBox_BeginUpdate($SectionNameInput)
-				_GUICtrlComboBox_AddString($SectionNameInput, GUICtrlRead($CreateTabSectionNameInput))
-				_GUICtrlComboBox_EndUpdate($SectionNameInput)
-				#ce
 				MsgBox(0,"","Wurde erstellt ")
-				;GUICtrlSetData($CreateTabSectionNameInput,"")
 				GUICtrlSetData($CreateTabLabelFileInput,"")
 				GUICtrlSetData($CreateTabPrefixInput,"")
 
@@ -530,8 +472,6 @@ Func createINISection()
 	Local $tmpSection = $InputArray[UBound($InputArray)-1]
 	Local $SectionNameSplitt = StringSplit($tmpSection,".")
 	Local $NewSectionName = $SectionNameSplitt[1]
-
-	;GUICtrlSetData($CreateTabSectionNameInput,$NewSectionName)
 	local $SectionNameValue = $NewSectionName
 
 	local $Keys = "Labelfile=" & @CRLF &  "Labelprefix="
@@ -574,8 +514,6 @@ EndFunc
 Func _readCustomSections()
 	;Array für die Combobox initialisieren
 	$sections = IniReadSectionNames($INIFile)
-
-	;_ArrayDisplay($sections)
 	_ArrayDelete($sections,0)
 
 	Global $indicesToDelete = []
@@ -590,8 +528,6 @@ Func _readCustomSections()
 		_ArrayDelete($sections, $indicesToDelete[$i])
 	next
 
-	;_ArrayDisplay($sections)
-
 EndFunc
 
 Func Refresh()
@@ -601,8 +537,6 @@ Func Refresh()
 	ConsoleWrite("Start: " & @HOUR & ":"& @MIN&":"&@SEC & @CRLF)
 	Global $SectionNames = IniReadSectionNames($INIFile) ;Speichert die Sectionnames in ein Array
 	ConsoleWrite("Dateigröße: "& $FileSize & @CRLF)
-
-	;GUICtrlSetData($idProgressbar, 2)
 
 	;prüft ob irgendwo ein Pfad fehlt
 	Local $z
@@ -621,11 +555,8 @@ Func Refresh()
 		$Labelfail = true
 	EndIf
 
-	; das eigentliche einlesen der Labels
-	;if $FileSize == 0 then
 		; hier muss das Tool die Labels in die neue Textdatei einlesen
 		ConsoleWrite("Die Labeldatei ist leer" & @CRLF)
-		;Local $totalIterationen = UBound($SectionNames)-1
 		Local $counter = 0
 		For $i = 1 to Ubound($SectionNames)-1
 			Local $SectionName = $SectionNames[$i]
@@ -633,8 +564,6 @@ Func Refresh()
 				Local $SectionContent = _ReadInSection($SectionNames[$i])
 				_ArrayAdd($Werte,$SectionContent)
 				_FileWriteFromArray($LabelDatei,$Werte) ; schreibt das Array in das neue Dokument Labels.txt
-				;Local $procent = ($counter/$totalIterationen) * 100
-				;GUICtrlSetData($idProgressbar, $procent)
 			EndIf
 		next
 		ConsoleWrite("Größe des Arrays(Labels): " & UBound($Labels)&","& UBound($Labels,2) & @CRLF)
@@ -643,12 +572,7 @@ Func Refresh()
 		; mit der Funktion readLabelFile_Intog_2DArray in das 2D-Array einlesen
 		$Labels = readLabelFile_Into_2DArray_Refresh($LabelDatei)
 
-	;EndIf
-
 	ConsoleWrite("Ende: " & @HOUR & ":" &@MIN&":"&@SEC&@CRLF)
-	;GUICtrlSendMsg($idProgressbar,$PBM_SETMARQUEE,false,50)
-	;GUICtrlSetData($idProgressbar, 100)
-	;_ArrayDisplay($Werte)
 EndFunc
 
 Func readLabelFile_Into_2DArray_Refresh($pFile)
@@ -658,7 +582,6 @@ Func readLabelFile_Into_2DArray_Refresh($pFile)
     EndIf
 
     Local $FileContent = FileReadToArray($pFile) ; Schreibt den Inhalt des Files in ein Array
-    ;_ArrayDisplay($FileContent, "Filecontent:") ;zeigt zum Debuggen das Array an
 
     Local $FileContent_Rows = UBound($FileContent) - 1 ; Anzahl der Zeilen
     ConsoleWrite("$FileContent_Rows=" & $FileContent_Rows & @CRLF) ; gibt zum Debuggen die Anzahl der Zeilen aus
@@ -674,14 +597,11 @@ Func readLabelFile_Into_2DArray_Refresh($pFile)
         If StringLeft($FileContentLine, 1) <> " " Then
             Local $tmpArray = StringSplit($FileContentLine, "|")
             ConsoleWrite("CurrentPos " & $CurrentPos & @CRLF)
-            ;_ArrayDisplay($tmpArray, "Das richtige Array")
 
             Local $label = $tmpArray[1]
             Local $text = $tmpArray[2]
             Local $comment = ""
             Local $prefix = $tmpArray[4]
-
-            ;_ArrayDisplay($ValuesCurrentFile, "valuesCurrentFile")
 
             $ValuesCurrentFile[$CurrentPos][0] = $label
             $ValuesCurrentFile[$CurrentPos][1] = $text
