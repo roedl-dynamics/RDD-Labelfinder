@@ -32,6 +32,10 @@ Opt ("MustDeclareVars",1)
 #include <GuiListView.au3>
 #include <GuiComboBoxEx.au3>
 #include <ProgressConstants.au3>
+; Ab hier neu für Fileinstall
+#include <WinAPI.au3> ; für _SendMessage
+#include <WinAPIHObj.au3>
+#include <WinAPIGdi.au3>
 
 ;Opt("MustDeclareVars",1)
 Opt("TrayMenuMode", 3) ;
@@ -43,6 +47,14 @@ GLobal $RefreshImagePath = @ScriptDir & "\Refresh.ico"
 Global $iSearch = TrayCreateItem("Label suchen")
 Global $iExit = TrayCreateItem("Beenden")
 Global $Werte [0][4] ; bleibt umd die Daten aus dem INI File auszulesen
+
+;Global Const $BM_SETIMAGE = 0xF7 ; Für das Integrieren der  ico Dateien notwendig
+; $BM_SETIMAGE = 0xF7 ; Für das Integrieren der  ico Dateien notwendig
+
+;Bereitstellen der ICONs
+FileInstall("Refresh.ico", @TempDir & "\Refresh.ico", 1)
+FileInstall("Search.ico", @TempDir & "\Search.ico", 1)
+
 
 ; zum Test
 Global $LabelDatei = @ScriptDir& "\Labels.txt" ; Zusätzliche Textdatei die die Werte Zwischenspeichert das das Tool im Launcher verwendbar ist
@@ -269,7 +281,7 @@ Func openGUI()
 
 		Global $RefreshButton = GUICtrlCreateButton("",270,30,60,20,$BS_ICON)
 		GUICtrlSetResizing(-1,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
-		GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
+		;GUICtrlSetImage($RefreshButton, $RefreshImagePath, 169, 0)
 
 		Global $idProgressbar = GUICtrlCreateProgress(16, 30, 240, 20, $PBS_SMOOTH)
 		;Global $idProgressbar = GUICtrlCreateProgress(16, 25, 190, 20,  $PBS_MARQUEE)
@@ -277,7 +289,18 @@ Func openGUI()
 
 		Global $SearchButton = GUICtrlCreateButton("", 270, 75, 60, 20,$BS_ICON)
 		GUICtrlSetResizing($SearchButton,$GUI_DOCKRIGHT+$GUI_DOCKHCENTER+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT+$GUI_DOCKTOP)
-		GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
+		;GUICtrlSetImage($SearchButton, $Imagepath, 169, 0)
+
+		;Handle für die beiden Buttons Search und Refresh
+		Global $hSearchButton = GUICtrlGetHandle($SearchButton)
+		Global $hRefreshButton = GUICtrlGetHandle($RefreshButton)
+
+		;Icons Laden
+		Global $hSearchIcon = _WinAPI_LoadImage(0, @TempDir & "\Search.ico", $IMAGE_ICON, 24, 24, $LR_LOADFROMFILE)
+		Global $hRefreshIcon = _WinAPI_LoadImage(0, @TempDir & "\Refresh.ico", $IMAGE_ICON, 24, 24, $LR_LOADFROMFILE)
+		;Icons zuweisen
+		_SendMessage($hSearchButton,$BM_SETIMAGE,$IMAGE_ICON,$hSearchIcon) ;Search Button
+		_SendMessage($hRefreshButton,$BM_SETIMAGE,$IMAGE_ICON,$hRefreshIcon) ;Refresh Button
 
 		Global $InputField = GUICtrlCreateInput("", 26, 75, 230, 20)
 		GUICtrlSetResizing($InputField,$GUI_DOCKHEIGHT+ $GUI_DOCKRIGHT+$GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH)
