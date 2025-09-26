@@ -406,8 +406,8 @@ func search()
 	Local $eingabe = GUICtrlRead($InputField)
 
 	if $eingabe == "" then
-		MsgBox(48,"Achtung","leeres Suchfeld")
-
+		MsgBox(48,"Achtung","das Suchfeld ist leer es wird nicht nach Labels gesucht")
+		return
 	EndIf
 
 	; leert die Resultate der alten Suche (läuft Rückwärts da das Array immer kleiner wird)
